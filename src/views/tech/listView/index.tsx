@@ -6,20 +6,22 @@ import tableDataOrders from './variable/tableApp';
 import Banner from'./components/Banner';
 
 export default function SearchUser() {
+
+	const filteredData = tableDataOrders;
+	const total = filteredData.length;
+	const errors = filteredData.filter((row) => row.status === 'Error').length;
+	const warnings = filteredData.filter((row) => row.status === 'Warning').length;
+	const working = filteredData.filter((row) => row.status === 'Working').length;
+
 	return (
 		<Flex direction='column' pt={{ sm: '125px', lg: '75px' }} justifyContent='space-between' marginBottom={'100px'}>
-			<Banner
-						total={156}
-						errors={8}
-						warnings={11}
-						working={135}
-					/>
+			<Banner total={total} errors={errors} warnings={warnings} working={working} />
 			<Card px='0px' mb='5'>
 				<ApplicationsTable tableData={tableDataOrders} />
 			</Card>
-			<Card px='0px'>
+			{/* <Card px='0px'>
 				<ApplicationsTable tableData={tableDataOrders} />
-			</Card>
+			</Card> */}
 		</Flex>
 	);
 }

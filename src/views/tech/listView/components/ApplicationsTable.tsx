@@ -31,16 +31,17 @@ type RowObj = {
 
 export default function SearchTableOrders(props: { tableData: any }) {
 	const { tableData } = props;
-    const textColor = useColorModeValue("navy.700", "white");
-    const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");  
-    const brandColor = useColorModeValue("brand.500", "brand.400");
+  const textColor = useColorModeValue("navy.700", "white");
+  const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");  
+  const brandColor = useColorModeValue("brand.500", "brand.400");
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
   let defaultData = tableData; 
   const [globalFilter, setGlobalFilter] = React.useState('')
-    const columnHelper = createColumnHelper<RowObj>();
+  const columnHelper = createColumnHelper<RowObj>();
  	const columns = [
 		columnHelper.accessor('name', {
 			id: 'name',
@@ -168,6 +169,13 @@ export default function SearchTableOrders(props: { tableData: any }) {
     debugHeaders: true,
     debugColumns: false,
   })
+
+  const filteredData = table.getRowModel().rows.map((row) => row.original);
+  const total = filteredData.length;
+  const errors = filteredData.filter((row) => row.status === 'Error').length;
+  const warnings = filteredData.filter((row) => row.status === 'Warning').length;
+  const working = filteredData.filter((row) => row.status === 'Working').length;
+
   const createPages = (count: number) => {
     let arrPageCount = [];
 
