@@ -45,7 +45,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 			p='10px'
 			borderRadius='30px'
 			boxShadow={shadow}>
-			<SearchBar
+			{/* <SearchBar
 				mb={() => {
 					if (secondary) {
 						return { base: '10px', md: 'unset' };
@@ -54,12 +54,12 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 				}}
 				me='10px'
 				borderRadius='30px'
-			/>
+			/> */}
 			<SidebarResponsive routes={routes} />
 			<Menu>
-				<MenuButton p='0px'>
+				{/* <MenuButton p='0px'>
 					<Icon mt='6px' as={MdNotificationsNone} color={navbarIcon} w='18px' h='18px' me='10px' />
-				</MenuButton>
+				</MenuButton> */}
 				<MenuList
 					boxShadow={shadow}
 					p='20px'
@@ -70,15 +70,15 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 					me={{ base: '30px', md: 'unset' }}
 					minW={{ base: 'unset', md: '400px', xl: '450px' }}
 					maxW={{ base: '360px', md: 'unset' }}>
-					<Flex w='100%' mb='20px'>
+					{/* <Flex w='100%' mb='20px'>
 						<Text fontSize='md' fontWeight='600' color={textColor}>
 							Notifications
 						</Text>
-					</Flex>
+					</Flex> */}
 					<Flex flexDirection='column'>
-						<MenuItem _hover={{ bg: 'none' }} _focus={{ bg: 'none' }} px='0' borderRadius='8px' mb='10px'>
+						{/* <MenuItem _hover={{ bg: 'none' }} _focus={{ bg: 'none' }} px='0' borderRadius='8px' mb='10px'>
 							<ItemContent info='Monitoring Dashboard' />
-						</MenuItem>
+						</MenuItem> */}
 						<MenuItem _hover={{ bg: 'none' }} _focus={{ bg: 'none' }} px='0' borderRadius='8px' mb='10px'>
 							<ItemContent info='Monitoring Dashboard' />
 						</MenuItem>

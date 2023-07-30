@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   Box,
@@ -17,32 +17,75 @@ import {
 } from '@chakra-ui/react';
 
 import Banner from 'views/tech/panelView/components/Banner';
-import Card from 'components/card/ServerCard';
+import ApplicationCard from 'views/tech/panelView/components/ApplicationCard';
+import ServerCard from './components/ServerCard';
+import ServerCardList from './components/ServerCardList';
 import { SearchBar } from 'views/tech/panelView/components/Search';
 import { HSeparator } from 'components/separator/Separator';
 import tableAppList from './variable/tableAppList';
+import tableNodeList from './variable/tableServerNodeList';
 
 import {
   MdDashboard,
   MdDensityMedium,
-  MdDensityLarge,
   MdDensitySmall,
 } from 'react-icons/md';
 
 interface AppData {
 	name: string;
-	error: string;
-	solution: string;
-	time: string;
+	aaCode: string;
 	status: string;
+	mcStatus: string,
+  appdStatus: string,
+  guiStatus: string,
 }
 
+type NodeObj = {
+  name: string;
+  type: 'MC' | 'AppD';
+  aaCode: string;
+  error: string;
+  time: string;
+  status: 'Error' | 'Warning' | 'Working';
+  link: string;
+};
+
 export default function PanelView() {
-  const [tabState, setTabState] = useState('server');
+  const [tabState, setTabState] = useState('application');
+  const [activeTab, setActiveTab] = useState<'application' | 'server'>('application');
+  const [filteredServerList, setFilteredServerList] = useState<NodeObj[]>(tableNodeList);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [filteredAppList, setFilteredAppList] = useState(tableAppList);
+  const [selectedAppAACode, setSelectedAppAACode] = useState<string | null>(null);
+  const [tabKey, setTabKey] = useState<number>(0);
+  const [shouldSwitchToServerTab, setShouldSwitchToServerTab] = useState(false);
+
+  const filterServersByApp = (aaCode: string) => {
+    const filteredServerList = tableNodeList.filter((node) => node.aaCode === aaCode);
+    setFilteredServerList(filteredServerList);
+  };
+
+  const generateRandomKey = () => Math.floor(Math.random() * 1000) + 1;
+  
+  // Function to handle tab change
+  const handleTabChange = (index: number) => {
+    if (index === 0) {
+      // If the "Application" tab is active
+      setTabState('application');
+    } else if (index === 1) {
+      // If the "Server" tab is active
+      setTabState('server');
+    }
+      // if (selectedAppAACode) {
+      //   // If there is a selected application, filter the server list based on its aaCode
+      //   filterServersByApp(selectedAppAACode);
+      // } else {
+      //   // If there is no selected application, show all server cards
+      //   setFilteredServerList(tableNodeList);
+      // }
+  };
 
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const buttonBg = useColorModeValue('transparent', 'navy.800');
@@ -75,11 +118,66 @@ export default function PanelView() {
     }
     return data.status === selectedStatus;
   };  
+
+  const filterNodeByName = (data: NodeObj) => {
+    if (searchQuery === '') {
+      return true; // Show all nodes when search query is empty
+    }
+    const lowerSearchQuery = searchQuery.toLowerCase();
+    return data.name.toLowerCase().includes(lowerSearchQuery);
+  };
+
+  const filterNodeByStatus = (data: NodeObj) => {
+    if (selectedStatus === 'all' || selectedStatus === '') {
+      return true; // Show all nodes when 'All' or an empty value is selected
+    }
+    return data.status === selectedStatus;
+  };
   
   useEffect(() => {
     const filteredList = tableAppList.filter(filterBySearch).filter(filterByStatus);
     setFilteredAppList(filteredList);
   }, [searchQuery, selectedStatus]);
+
+  useEffect(() => {
+    // Filter the server list based on search query and selected status
+    const filteredServerList = tableNodeList.filter(filterNodeByName).filter(filterNodeByStatus);
+
+    // Sort the filtered server list based on the sort order
+    filteredServerList.sort((a, b) => {
+      // Customize the property you want to sort based on
+      if (sortOrder === 'asc') {
+        // For ascending order
+        return a.status.localeCompare(b.status);
+      } else {
+        // For descending order
+        return b.status.localeCompare(a.status);
+      }
+    });
+
+    // Update the state with the filtered and sorted server list
+    setFilteredServerList(filteredServerList);
+  }, [searchQuery, selectedStatus, sortOrder]);
+
+  // Function to handle "MC" button click and filter the application list by MC servers
+  const handleMCClick = (aaCode: string) => {
+    setSelectedAppAACode(aaCode); // Set the selected application's aaCode
+    setShouldSwitchToServerTab(true); // Set the flag to indicate that we need to switch to the "Server" tab
+  };
+
+  useEffect(() => {
+    if (selectedAppAACode) {
+      // If there is a selected application, filter the server list based on its aaCode
+      filterServersByApp(selectedAppAACode);
+    } else {
+      // If there is no selected application, show all server cards
+      setFilteredServerList(tableNodeList);
+    }
+  }, [selectedAppAACode]);
+
+  const switchTab = (tab: 'application' | 'server') => {
+    setTabState(tab);
+  };
 
   return (
     <Box pt={{ base: '180px', md: '80px', xl: '80px' }}>
@@ -96,7 +194,7 @@ export default function PanelView() {
               pb='0px'
               flexDirection='column'
               onClick={() => {
-                setTabState('server');
+                switchTab('application');
               }}
               me='50px'
               bg='unset'
@@ -109,7 +207,7 @@ export default function PanelView() {
               <Flex align='center'>
                 <Icon color={textColor} as={MdDensitySmall} w='20px' h='20px' me='8px' />
                 <Text color={textColor} fontSize='lg' fontWeight='500' me='12px'>
-                  Server
+                  Application
                 </Text>
                 <Text color='secondaryGray.600' fontSize='md' fontWeight='400'>
                   {filteredAppList.length}
@@ -119,14 +217,14 @@ export default function PanelView() {
                 height='4px'
                 w='100%'
                 transition='0.1s linear'
-                bg={tabState === 'server' ? 'navy.700' : 'transparent'}
+                bg={tabState === 'application' ? 'navy.700' : 'transparent'}
                 mt='15px'
                 borderRadius='30px'
               />
             </Tab>
             <Tab
               onClick={() => {
-                setTabState('application');
+                switchTab('server');
               }}
               pb='0px'
               me='50px'
@@ -141,49 +239,17 @@ export default function PanelView() {
               <Flex align='center'>
                 <Icon color={textColor} as={MdDensityMedium} w='20px' h='20px' me='8px' />
                 <Text color={textColor} fontSize='lg' fontWeight='500' me='12px'>
-                  Application
+                  Server
                 </Text>
                 <Text color='secondaryGray.600' fontSize='md' fontWeight='400'>
-                  4
+                  {filteredServerList.length}
                 </Text>
               </Flex>
               <Box
                 height='4px'
                 w='100%'
                 transition='0.1s linear'
-                bg={tabState === 'application' ? 'brand.500' : 'transparent'}
-                mt='15px'
-                borderRadius='30px'
-              />
-            </Tab>
-            <Tab
-              pb='0px'
-              flexDirection='column'
-              onClick={() => {
-                setTabState('solution');
-              }}
-              me='50px'
-              bg='unset'
-              _selected={{
-                bg: 'none',
-              }}
-              _focus={{ border: 'none' }}
-              minW='max-content'
-            >
-              <Flex align='center'>
-                <Icon color={textColor} as={MdDensityLarge} w='20px' h='20px' me='8px' />
-                <Text color={textColor} fontSize='lg' fontWeight='500' me='12px'>
-                  Solution
-                </Text>
-                <Text color='secondaryGray.600' fontSize='md' fontWeight='400'>
-                  12
-                </Text>
-              </Flex>
-              <Box
-                height='4px'
-                w='100%'
-                transition='0.1s linear'
-                bg={tabState === 'solution' ? 'brand.500' : 'transparent'}
+                bg={tabState === 'server' ? 'navy.700' : 'transparent'}
                 mt='15px'
                 borderRadius='30px'
               />
@@ -194,18 +260,18 @@ export default function PanelView() {
         <Flex w='100%'>
           <SearchBar onSearch={setSearchQuery} />
           <Select
-            fontSize="sm"
-            variant="main"
-            h="44px"
-            maxH="44px"
-            me="20px"
+            fontSize='sm'
+            variant='main'
+            h='44px'
+            maxH='44px'
+            me='20px'
             value={selectedStatus}
             onChange={(event) => setSelectedStatus(event.target.value)}
           >
-            <option value="">All</option>
-            <option value="Error" >Red</option>
-            <option value="Warning">Amber</option>
-            <option value="Working">Green</option>
+            <option value=''>All</option>
+            <option value='Error'>Red</option>
+            <option value='Warning'>Amber</option>
+            <option value='Working'>Green</option>
           </Select>
           <Select
             fontSize='sm'
@@ -219,52 +285,36 @@ export default function PanelView() {
             <option value='asc'>Ascending</option>
             <option value='desc'>Descending</option>
           </Select>
-          <Button
-            me='20px'
-            bg={buttonBg}
-            border='1px solid'
-            color='secondaryGray.600'
-            borderColor={useColorModeValue('secondaryGray.100', 'whiteAlpha.100')}
-            borderRadius='16px'
-            _placeholder={{ color: 'secondaryGray.600' }}
-            _hover={hoverButton}
-            _active={activeButton}
-            _focus={activeButton}
-          >
-            <Icon color={textColor} as={MdDashboard} />
-          </Button>
         </Flex>
         <Text mt='25px' mb='36px' color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
-          {filteredAppList.length} Results
+          {tabState === 'application' ? filteredAppList.length : filteredServerList.length} Results
         </Text>
         <TabPanels>
           <TabPanel px='0px'>
             <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
-              {tableAppList
-                .filter((data: any) => {
-                  const searchFields = ['name', 'error', 'time', 'solution'];
-                  const lowerSearchQuery = searchQuery.toLowerCase();
-                  return searchFields.some((field) =>
-                    data[field].toLowerCase().includes(lowerSearchQuery)
-                  );
-                })
-                .filter((data: any) => {
-                  if (selectedStatus === 'all' || selectedStatus === '') {
-                    return true;
-                  }
-                  return data.status === selectedStatus;
-                  })
-                .sort((a: any, b: any) => {
+              {filteredAppList
+                .sort((a, b) => {
                   if (sortOrder === 'asc') {
                     return getStatusPriority(a.status) - getStatusPriority(b.status);
                   } else {
                     return getStatusPriority(b.status) - getStatusPriority(a.status);
                   }
                 })
-                .map((data: any, index: number) => (
-                  <Card key={index} {...data} />
-                ))}
+                .map((data, index) => {
+                  return (
+                    <ApplicationCard
+                      key={index}
+                      application={data}
+                      serversNodes={tableNodeList.filter((node) => node.aaCode === data.aaCode)}
+                      onMCClick={handleMCClick}
+                    />
+                  );
+                })}
             </SimpleGrid>
+          </TabPanel>
+          <TabPanel px='0px'>
+            {/* Use the key prop to force a re-render of the ServerCardList component */}
+            {tabState === 'server' && <ServerCardList key={tabKey} filteredServerList={filteredServerList} />}
           </TabPanel>
         </TabPanels>
       </Tabs>

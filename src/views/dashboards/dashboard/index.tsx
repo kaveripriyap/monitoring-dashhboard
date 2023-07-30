@@ -53,18 +53,18 @@ export default function UserReports() {
 					<Balance />
 					<PercentageEstimation />
 				</SimpleGrid>
-				<TotalSpent />
+				{/* <TotalSpent /> */}
 			</SimpleGrid>
 
 			<SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
 				<ComplexTable tableData={tableDataComplex} />
 				<SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
 					<YourCard />
-					<PieCard />
+					{/* <PieCard /> */}
 				</SimpleGrid>
 			</SimpleGrid>
 
-			<SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+			{/* <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
 				<SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
 					<DailyTraffic />
 					<WeeklyRevenue />
@@ -73,7 +73,7 @@ export default function UserReports() {
 					<ProjectStatus />
 					<UserActivity />
 				</SimpleGrid>
-			</SimpleGrid>
+			</SimpleGrid> */}
 		</Box>
 	);
 }

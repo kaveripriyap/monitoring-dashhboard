@@ -1,17 +1,16 @@
 import { AvatarGroup, Box, Button, Flex, Icon, Link, Text, useColorModeValue } from '@chakra-ui/react';
 import { useState } from 'react';
 import { MdOutlineWarningAmber, MdOutlineErrorOutline, MdOutlineCheckCircle } from 'react-icons/md';
-import Card from './Card';
+import Card from '../../../../components/card/Card';
 
-interface AppCardProps {
+interface ServerCardProps {
   name: string;
   error: string;
-  solution: string;
   time: string;
   status: string;
 }
 
-const AppCard: React.FC<AppCardProps> = ({ name, error, solution, time, status }) => {
+const ServerCard: React.FC<ServerCardProps> = ({ name, error, time, status }) => {
   const [like, setLike] = useState(false);
   const textColor = useColorModeValue('navy.700', 'white');
   const textColorBid = useColorModeValue('black.500', 'white');
@@ -127,7 +126,6 @@ const AppCard: React.FC<AppCardProps> = ({ name, error, solution, time, status }
               Error: {error}
             </Text>
             <Link
-              href={solution}
               mt={{
                 base: '0px',
                 md: '10px',
@@ -155,4 +153,4 @@ const AppCard: React.FC<AppCardProps> = ({ name, error, solution, time, status }
   );
 };
 
-export default AppCard;
+export default ServerCard;

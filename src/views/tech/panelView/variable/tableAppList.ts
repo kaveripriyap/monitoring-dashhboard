@@ -1,74 +1,84 @@
-type RowObj = {
+type AppObj = {
 	name: string;
-	error: string;
-	solution: string;
-	time: string;
+	aaCode: string;
 	status: string;
+	mcStatus: string,
+    appdStatus: string,
+    guiStatus: string,
 };
 
-const tableAppList: RowObj[] = [
+const tableAppList: AppObj[] = [
 	{
-		name: 'Server 1',
-		error: 'CPU Overload',
-		solution: 'Solution 1',
-		time: 'July 11, 8:10 AM',
+		name: 'App 1',
+		aaCode: 'AA1',
 		status: 'Error',
+		mcStatus: 'Green',
+        appdStatus: 'Green',
+        guiStatus: 'Green',
 	},
 	{
-		name: 'Server 2',
-		error: 'Disk Overload',
-		solution: 'Solution 2',
-		time: 'July 11, 8:53 AM',
+		name: 'App 2',
+		aaCode: 'AA2',
 		status: 'Error',
+		mcStatus: 'Amber',
+        appdStatus: 'Green',
+        guiStatus: 'Amber',
 	},
 	{
-		name: 'Server 3',
-		error: 'Health Rule Violation',
-		solution: 'Solution 1',
-		time: 'July 11, 9:32 AM',
+		name: 'App 3',
+		aaCode: 'AA3',
 		status: 'Error',
+		mcStatus: 'Green',
+        appdStatus: 'Amber',
+        guiStatus: 'Red',
 	},
 	{
-		name: 'Server 4',
-		error: 'APPL Issue',
-		solution: 'Solution 3',
-		time: 'July 11, 10:47 AM',
+		name: 'App 4',
+		aaCode: 'AA4',
 		status: 'Warning',
+		mcStatus: 'Amber',
+        appdStatus: 'Green',
+        guiStatus: 'Amber',
 	},
 	{
-		name: 'Server 5',
-		error: 'Certificate Expired',
-		solution: 'Solution 4',
-		time: 'July 11, 11:02 AM',
+		name: 'App 5',
+		aaCode: 'AA5',
 		status: 'Warning',
+		mcStatus: 'Green',
+        appdStatus: 'Green',
+        guiStatus: 'Green',
 	},
 	{
-		name: 'Server 6',
-		error: 'Health Rule Violation',
-		solution: 'Solution 3',
-		time: 'July 11, 11:25 AM',
+		name: 'App 6',
+		aaCode: 'AA6',
 		status: 'Warning',
+		mcStatus: 'Amber',
+        appdStatus: 'Amber',
+        guiStatus: 'Amber',
 	},
 	{
-		name: 'Server 7',
-		error: 'Health Rule Violation',
-		solution: 'Solution 1',
-		time: 'July 11, 12:31 PM',
+		name: 'App 7',
+		aaCode: 'AA7',
 		status: 'Warning',
+		mcStatus: 'Red',
+        appdStatus: 'Red',
+        guiStatus: 'Amber',
 	},
 	{
-		name: 'Server 8',
-		error: 'Disk Overload',
-		solution: 'Solution 2',
-		time: 'July 11, 2:49 PM',
+		name: 'App 8',
+		aaCode: 'AA8',
 		status: 'Warning',
+		mcStatus: 'Green',
+        appdStatus: 'Green',
+        guiStatus: 'Green',
 	},
 	{
-		name: 'Server 9',
-		error: 'No Error',
-		solution: 'Solution 4',
-		time: 'July 11, 3:16 PM',
+		name: 'App 9',
+		aaCode: 'AA9',
 		status: 'Working',
+		mcStatus: 'Green',
+        appdStatus: 'Green',
+        guiStatus: 'Red',
 	}
 ];
 

@@ -126,24 +126,7 @@ export default function ComplexTable(props: { tableData: any }) {
 					{info.getValue()}
 				</Text>
 			)
-		}),
-		// columnHelper.accessor('progress', {
-		// 	id: 'progress',
-		// 	header: () => (
-		// 		<Text
-		// 			justifyContent='space-between'
-		// 			align='center'
-		// 			fontSize={{ sm: '10px', lg: '12px' }}
-		// 			color='gray.400'>
-		// 			PROGRESS
-		// 		</Text>
-		// 	),
-		// 	cell: (info) => (
-		// 		<Flex align='center'>
-		// 			<Progress variant='table' colorScheme='brandScheme' h='8px' w='108px' value={info.getValue()} />
-		// 		</Flex>
-		// 	)
-		// })
+		})
 	];
 	const [ data, setData ] = React.useState(() => [ ...defaultData ]);
 	const table = useReactTable({

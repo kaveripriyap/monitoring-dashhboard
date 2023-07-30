@@ -48,21 +48,21 @@ const routes = [
 	},
 
 	// --- Business Support View ---
-	{
-		name: 'Business Support',
-		path: '/business',
-		icon: <Icon as={MdBusinessCenter} width='20px' height='20px' color='inherit' />,
-		collapse: true,
-		items: [
-			{
-				name: 'Application Status',
-				layout: '',
-				path: '/business/app-status',
-				exact: false,
-				component: ApplicationStatus
-			}
-		]
-	}
+	// {
+	// 	name: 'Business Support',
+	// 	path: '/business',
+	// 	icon: <Icon as={MdBusinessCenter} width='20px' height='20px' color='inherit' />,
+	// 	collapse: true,
+	// 	items: [
+	// 		{
+	// 			name: 'Application Status',
+	// 			layout: '',
+	// 			path: '/business/app-status',
+	// 			exact: false,
+	// 			component: ApplicationStatus
+	// 		}
+	// 	]
+	// }
 ];
 
 export default routes;
