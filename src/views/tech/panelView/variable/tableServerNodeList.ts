@@ -1,4 +1,4 @@
-type NodeObj = {
+export type NodeObj = {
     name: string;
     type: 'MC' | 'AppD';
     aaCode: string;

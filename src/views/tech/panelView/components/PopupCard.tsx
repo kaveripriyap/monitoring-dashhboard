@@ -21,7 +21,7 @@ import {
   Link,
   Button,
 } from '@chakra-ui/react';
-import { MdCheckCircle, MdOutlineWarningAmber, MdOutlineErrorOutline, MdFilterList } from 'react-icons/md';
+import { MdCheckCircle, MdOutlineWarningAmber, MdOutlineErrorOutline, MdSnooze } from 'react-icons/md';
 
 type ServerNode = {
   name: string;
@@ -31,6 +31,7 @@ type ServerNode = {
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
+  snoozeTime?: number;
 };
 
 type PopupCardProps = {
@@ -59,7 +60,14 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
       const columnId = sorting[0].id;
       const aValue = a[columnId];
       const bValue = b[columnId];
-      return sorting[0].desc ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
+  
+      if (columnId === 'snoozeTime' && typeof aValue === 'number' && typeof bValue === 'number') {
+        // Handle sorting for the snoozeTime property (if present and both are numbers)
+        return sorting[0].desc ? bValue - aValue : aValue - bValue;
+      }
+  
+      // Handle sorting for other properties (e.g., strings)
+      return sorting[0].desc ? bValue.toString().localeCompare(aValue.toString()) : aValue.toString().localeCompare(bValue.toString());
     });
     return sortedData;
   };
@@ -83,16 +91,30 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
   };
 
   const filterByType = (data: ServerNode) => {
+    if (data.snoozeTime && data.snoozeTime > Date.now()) {
+      return false;
+    }
     if (filterType === 'All') {
       return true; // Show all server nodes when 'All' is selected
     }
     return data.type === filterType;
   };
 
+  const handleSnooze = (serverNode: ServerNode) => {
+    // Calculate the snooze time (5 minutes from now)
+    const snoozeTime = Date.now() + 5 * 60 * 1000;
+  
+    // Update the snoozeTime property of the serverNode
+    serverNode.snoozeTime = snoozeTime;
+  
+    // ... (If you have a central state management system like Redux, update the serverNodes there)
+    // Otherwise, update the local state where serverNodes are stored.
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent width="90%" maxWidth="1000px" margin="auto">
         <ModalHeader>Server/Node Details</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -146,6 +168,7 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
                     </Flex>
                   </Th>
                   <Th colSpan={1}>Link</Th>
+                  <Th colSpan={1}>Snooze</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -174,6 +197,9 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
                         <Link href={serverNode.link} target="_blank" rel="noopener noreferrer">
                           Link
                         </Link>
+                      </Td>
+                      <Td>
+                        <Icon as={MdSnooze} cursor="pointer" onClick={() => handleSnooze(serverNode)} />
                       </Td>
                     </Tr>
                   ))}

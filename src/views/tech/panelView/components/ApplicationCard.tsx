@@ -20,7 +20,7 @@ import PopupCard from './PopupCard';
 type Application = {
   name: string;
   aaCode: string;
-  status: string;
+  overallStatus: string;
   mcStatus: string;
   appdStatus: string;
   guiStatus: string;
@@ -74,71 +74,69 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
   const overallStatus = () => {
     const statuses = [application.mcStatus, application.appdStatus, application.guiStatus];
-    if (statuses.includes('Red')) {
-      return 'Red';
-    } else if (statuses.includes('Amber')) {
-      return 'Amber';
+    if (statuses.includes('Error')) {
+      return 'Error';
+    } else if (statuses.includes('Warning')) {
+      return 'Warning';
     } else {
-      return 'Green';
+      return 'Working';
     }
   };
 
   const getOverallMCStatus = () => {
     const mcNodes = serversNodes.filter((node) => node.type === 'MC');
     if (mcNodes.some((node) => node.status === 'Error')) {
-      return 'Red';
+      return 'Error';
     } else if (mcNodes.some((node) => node.status === 'Warning')) {
-      return 'Amber';
+      return 'Warning';
     } else {
-      return 'Green';
+      return 'Working';
     }
   };
-
-
   
   const getOverallAppDStatus = () => {
     const appdNodes = serversNodes.filter((node) => node.type === 'AppD');
     if (appdNodes.some((node) => node.status === 'Error')) {
-      return 'Red';
+      return 'Error';
     } else if (appdNodes.some((node) => node.status === 'Warning')) {
-      return 'Amber';
+      return 'Warning';
     } else {
-      return 'Green';
+      return 'Working';
     }
   };
 
   const mcOverallStatus = getOverallMCStatus();
   const mcIcon =
-    mcOverallStatus === 'Green'
+    mcOverallStatus === 'Working'
       ? MdOutlineCheckCircle
-      : mcOverallStatus === 'Amber'
+      : mcOverallStatus === 'Warning'
       ? MdOutlineWarningAmber
       : MdOutlineErrorOutline;
 
   const appdOverallStatus = getOverallAppDStatus();
   const appdIcon =
-    appdOverallStatus === 'Green'
+    appdOverallStatus === 'Working'
       ? MdOutlineCheckCircle
-      : appdOverallStatus === 'Amber'
+      : appdOverallStatus === 'Warning'
       ? MdOutlineWarningAmber
       : MdOutlineErrorOutline;
 
   const guiIcon =
-    application.guiStatus === 'Green'
+    application.guiStatus === 'Working'
       ? MdOutlineCheckCircle
-      : application.guiStatus === 'Amber'
+      : application.guiStatus === 'Warning'
       ? MdOutlineWarningAmber
       : MdOutlineErrorOutline;
 
   const overallStatusValue = overallStatus();
   const overallIcon =
-    overallStatusValue === 'Green'
+    overallStatusValue === 'Working'
       ? MdOutlineCheckCircle
-      : overallStatusValue === 'Amber'
+      : overallStatusValue === 'Warning'
       ? MdOutlineWarningAmber
       : MdOutlineErrorOutline;
   const overallIconColor =
-    overallStatusValue === 'Green' ? 'green.400' : overallStatusValue === 'Amber' ? 'orange.400' : 'red.400';
+    overallStatusValue === 'Working' ? 'green.400' : overallStatusValue === 'Warning' ? 'orange.400' : 'red.400';
 
   return (
     <Card p='20px'>
@@ -173,9 +171,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Icon
                 as={mcIcon}
                 color={
-                  mcOverallStatus === 'Green'
+                  mcOverallStatus === 'Working'
                     ? 'green.400'
-                    : mcOverallStatus === 'Amber'
+                    : mcOverallStatus === 'Warning'
                     ? 'orange.400'
                     : 'red.400'
                 }
@@ -198,9 +196,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Icon
                 as={appdIcon}
                 color={
-                  appdOverallStatus === 'Green'
+                  appdOverallStatus === 'Working'
                     ? 'green.400'
-                    : appdOverallStatus === 'Amber'
+                    : appdOverallStatus === 'Warning'
                     ? 'orange.400'
                     : 'red.400'
                 }

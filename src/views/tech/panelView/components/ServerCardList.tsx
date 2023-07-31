@@ -22,7 +22,7 @@ const ServerCardList: React.FC<ServerCardListProps> = ({ filteredServerList }) =
     <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
       {filteredServerList.map((serverNode) => (
         <ServerCard
-          key={serverNode.name}
+          key={serverNode.aaCode}
           name={serverNode.name}
           error={serverNode.error}
           time={serverNode.time}
