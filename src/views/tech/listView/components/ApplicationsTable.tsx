@@ -23,10 +23,11 @@ import {
   
 type RowObj = {
 	name: string;
-	error: string;
-	solution: string;
+	error?: string;
+	type: string;
 	time: string;
 	status: string;
+  component?: string;
 };
 
 export default function SearchTableOrders(props: { tableData: any }) {
@@ -60,6 +61,40 @@ export default function SearchTableOrders(props: { tableData: any }) {
         </Text>
 			)
 		}), 
+    columnHelper.accessor('type', {
+			id: 'type',
+			header: () => (
+				<Text
+					justifyContent='space-between'
+					align='center'
+					fontSize={{ sm: '10px', lg: '12px' }}
+					color='gray.400'>
+					TYPE
+				</Text>
+			),
+			cell: (info) => (
+        <Text color={textColor} fontSize='sm' fontWeight='500'>
+            {info.getValue()}
+        </Text>
+			)
+		}),
+    columnHelper.accessor('component', {
+			id: 'component',
+			header: () => (
+				<Text
+					justifyContent='space-between'
+					align='center'
+					fontSize={{ sm: '10px', lg: '12px' }}
+					color='gray.400'>
+					COMPONENT
+				</Text>
+			),
+			cell: (info) => (
+        <Text color={textColor} fontSize='sm' fontWeight='500'>
+            {info.getValue()}
+        </Text>
+			)
+		}),  
 		columnHelper.accessor('error', {
 			id: 'error',
 			header: () => (
@@ -107,31 +142,26 @@ export default function SearchTableOrders(props: { tableData: any }) {
 			),
 			cell: (info) => ( 
         <Badge
-            colorScheme={info.getValue() === 'Error' ? 'red' : 'Warning' ? 'orange': 'green'}
-					  color={info.getValue() === 'Error' ? 'red.500' : 'Warning' ? 'orange.500': 'green.500'}
+            colorScheme={
+              info.getValue() === 'Error'
+                ? 'red'
+                : info.getValue() === 'Warning'
+                ? 'orange'
+                : 'green' // Change to green when the status is 'Working'
+            }
+            color={
+              info.getValue() === 'Error'
+                ? 'red.500'
+                : info.getValue() === 'Warning'
+                ? 'orange.500'
+                : 'green.500' // Change to green when the status is 'Working'
+            }
             fontSize='sm'
             fontWeight='500'>
             {info.getValue()}
         </Badge>
 			)
-		}),
-		columnHelper.accessor('solution', {
-			id: 'solution',
-			header: () => (
-				<Text
-					justifyContent='space-between'
-					align='center'
-					fontSize={{ sm: '10px', lg: '12px' }}
-					color='gray.400'>
-					SOLUTION NAME
-				</Text>
-			),
-			cell: (info) => (
-        <Text color={textColor} fontSize='sm' fontWeight='500'>
-            {info.getValue()}
-        </Text>
-			)
-		})             
+		})        
 	];
 	const [ data, setData ] = React.useState(() => [ ...defaultData ]);
     const [{ pageIndex, pageSize }, setPagination] =

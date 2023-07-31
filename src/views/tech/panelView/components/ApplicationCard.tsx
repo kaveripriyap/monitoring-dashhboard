@@ -83,18 +83,46 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     }
   };
 
+  const getOverallMCStatus = () => {
+    const mcNodes = serversNodes.filter((node) => node.type === 'MC');
+    if (mcNodes.some((node) => node.status === 'Error')) {
+      return 'Red';
+    } else if (mcNodes.some((node) => node.status === 'Warning')) {
+      return 'Amber';
+    } else {
+      return 'Green';
+    }
+  };
+
+
+  
+  const getOverallAppDStatus = () => {
+    const appdNodes = serversNodes.filter((node) => node.type === 'AppD');
+    if (appdNodes.some((node) => node.status === 'Error')) {
+      return 'Red';
+    } else if (appdNodes.some((node) => node.status === 'Warning')) {
+      return 'Amber';
+    } else {
+      return 'Green';
+    }
+  };
+
+  const mcOverallStatus = getOverallMCStatus();
   const mcIcon =
-    application.mcStatus === 'Green'
+    mcOverallStatus === 'Green'
       ? MdOutlineCheckCircle
-      : application.mcStatus === 'Amber'
+      : mcOverallStatus === 'Amber'
       ? MdOutlineWarningAmber
       : MdOutlineErrorOutline;
+
+  const appdOverallStatus = getOverallAppDStatus();
   const appdIcon =
-    application.appdStatus === 'Green'
+    appdOverallStatus === 'Green'
       ? MdOutlineCheckCircle
-      : application.appdStatus === 'Amber'
+      : appdOverallStatus === 'Amber'
       ? MdOutlineWarningAmber
       : MdOutlineErrorOutline;
+
   const guiIcon =
     application.guiStatus === 'Green'
       ? MdOutlineCheckCircle
@@ -145,9 +173,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Icon
                 as={mcIcon}
                 color={
-                  application.mcStatus === 'Green'
+                  mcOverallStatus === 'Green'
                     ? 'green.400'
-                    : application.mcStatus === 'Amber'
+                    : mcOverallStatus === 'Amber'
                     ? 'orange.400'
                     : 'red.400'
                 }
@@ -170,9 +198,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Icon
                 as={appdIcon}
                 color={
-                  application.appdStatus === 'Green'
+                  appdOverallStatus === 'Green'
                     ? 'green.400'
-                    : application.appdStatus === 'Amber'
+                    : appdOverallStatus === 'Amber'
                     ? 'orange.400'
                     : 'red.400'
                 }
