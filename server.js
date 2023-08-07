@@ -77,6 +77,22 @@ function processBusinessTransactionsData(bizTransData) {
     return processedData;
 }
 
+function mergeAndSortData(eventsData, bizTransData) {
+    const mergedData = [...eventsData, ...bizTransData]
+        .sort((a, b) => new Date(b.Time) - new Date(a.Time));
+
+    const groupedData = mergedData.reduce((result, row) => {
+        const key = row.Application;
+        if (!result[key]) {
+            result[key] = [];
+        }
+        result[key].push(row);
+        return result;
+    }, {});
+
+    return groupedData;
+}
+
 // Schedule cron job for data collection and processing
 // Schedule cron job for data collection and processing
 cron.schedule('*/15 * * * *', async () => {
