@@ -6,8 +6,10 @@ const getOverallStatus = (mcStatus: string, appdStatus: string, guiStatus: strin
       return 'Error';
     } else if (statuses.includes('Warning')) {
       return 'Warning';
-    } else {
-      return 'Working';
+    } else if (statuses.includes('Working')) {
+	  return 'Working';
+	} else {
+      return 'Undefined';
     }
   };
 
@@ -20,15 +22,20 @@ const calculateDerivedStatuses = (nodes: NodeObj[], appList: AppObj[]): AppObj[]
 		? 'Error'
 		: mcNodes.some((node) => node.status === 'Warning')
 		? 'Warning'
-		: 'Working';
+		: mcNodes.some((node) => node.status === 'Working')
+		? 'Working'
+		: 'Undefined';
 
 		const appdStatus = appdNodes.some((node) => node.status === 'Error')
 		? 'Error'
 		: appdNodes.some((node) => node.status === 'Warning')
 		? 'Warning'
-		: 'Working';
+		: appdNodes.some((node) => node.status === 'Working')
+		? 'Working'
+		: 'Undefined';
 
 		const overallStatus = getOverallStatus(mcStatus, appdStatus, app.guiStatus);
+		console.log(overallStatus);
 
 		return { ...app, mcStatus, appdStatus, overallStatus };
 	});
@@ -62,7 +69,7 @@ const tableAppList: AppObj[] = [
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
-        guiStatus: 'Warning',
+        guiStatus: '',
 	},
 	{
 		name: 'App 3',
@@ -75,10 +82,10 @@ const tableAppList: AppObj[] = [
 	{
 		name: 'App 4',
 		aaCode: 'AA4',
-		overallStatus: '',
-		mcStatus: '',
-        appdStatus: '',
-        guiStatus: 'Warning',
+		overallStatus: 'Undefined',
+		mcStatus: 'Undefined',
+        appdStatus: 'Undefined',
+        guiStatus: 'Undefined',
 	},
 	{
 		name: 'App 5',

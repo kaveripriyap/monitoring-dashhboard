@@ -16,6 +16,7 @@ export function SearchBar(props: { variant?: string; children?: JSX.Element; onS
 			color={searchColor}
 			borderColor={useColorModeValue('secondaryGray.100', 'whiteAlpha.100')}
 			borderRadius='16px'
+			flexBasis='120px'
 			_placeholder={{ color: 'secondaryGray.600' }}
 			me={{ base: '10px', md: '20px' }}>
 			<InputLeftElement

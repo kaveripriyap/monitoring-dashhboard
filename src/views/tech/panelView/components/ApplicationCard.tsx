@@ -16,6 +16,7 @@ import {
 } from 'react-icons/md';
 import Card from '../../../../components/card/Card';
 import PopupCard from './PopupCard';
+import { useGlobalSnooze } from './GlobalSnoozeContext';
 
 type Application = {
   name: string;
@@ -34,6 +35,7 @@ type ServerNode = {
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
+  snoozeTime?: number;
 };
 
 type ApplicationCardProps = {
@@ -47,11 +49,11 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   serversNodes,
   onMCClick,
 }) => {
-  const [like, setLike] = useState(false);
   const textColor = useColorModeValue('navy.700', 'white');
   const textColorBid = useColorModeValue('black.500', 'white');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFilterType, setSelectedFilterType] = useState<'MC' | 'AppD' | 'All'>('All');
+  const { globalSnoozedItems, addGlobalSnooze } = useGlobalSnooze();
 
   const handleCheckIssueClick = () => {
     setIsOpen(true);
@@ -74,69 +76,96 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
   const overallStatus = () => {
     const statuses = [application.mcStatus, application.appdStatus, application.guiStatus];
-    if (statuses.includes('Error')) {
+    
+    if (statuses.some((status) => status === 'Error')) {
       return 'Error';
-    } else if (statuses.includes('Warning')) {
+    } else if (statuses.some((status) => status === 'Warning')) {
       return 'Warning';
-    } else {
+    } else if (statuses.some((status) => status === 'Working')) {
       return 'Working';
+    } else {
+      return 'Undefined'; // Return 'Undefined' when there is no data or data is empty
     }
   };
 
   const getOverallMCStatus = () => {
     const mcNodes = serversNodes.filter((node) => node.type === 'MC');
+    
+    if (mcNodes.length === 0) {
+      return 'Undefined'; // Return 'Undefined' when there are no MC nodes
+    }
+    
     if (mcNodes.some((node) => node.status === 'Error')) {
       return 'Error';
     } else if (mcNodes.some((node) => node.status === 'Warning')) {
       return 'Warning';
-    } else {
+    } else if (mcNodes.some((node) => node.status === 'Working')) {
       return 'Working';
+    } else {
+      return 'Undefined'; // Return 'Undefined' when there is no data or data is empty
     }
   };
   
   const getOverallAppDStatus = () => {
     const appdNodes = serversNodes.filter((node) => node.type === 'AppD');
+    
+    if (appdNodes.length === 0) {
+      return 'Undefined'; // Return 'Undefined' when there are no AppD nodes
+    }
+    
     if (appdNodes.some((node) => node.status === 'Error')) {
       return 'Error';
     } else if (appdNodes.some((node) => node.status === 'Warning')) {
       return 'Warning';
-    } else {
+    } else if (appdNodes.some((node) => node.status === 'Working')) {
       return 'Working';
+    } else {
+      return 'Undefined'; // Return 'Undefined' when there is no data or data is empty
     }
   };
 
   const mcOverallStatus = getOverallMCStatus();
-  const mcIcon =
-    mcOverallStatus === 'Working'
-      ? MdOutlineCheckCircle
-      : mcOverallStatus === 'Warning'
-      ? MdOutlineWarningAmber
-      : MdOutlineErrorOutline;
+  const mcIcon = mcOverallStatus === 'Working'
+    ? MdOutlineCheckCircle
+    : mcOverallStatus === 'Warning'
+    ? MdOutlineWarningAmber
+    : mcOverallStatus === 'Error'
+    ? MdOutlineErrorOutline
+    : undefined; // Set to undefined when status is 'Undefined'
 
   const appdOverallStatus = getOverallAppDStatus();
-  const appdIcon =
-    appdOverallStatus === 'Working'
-      ? MdOutlineCheckCircle
-      : appdOverallStatus === 'Warning'
-      ? MdOutlineWarningAmber
-      : MdOutlineErrorOutline;
+  const appdIcon = appdOverallStatus === 'Working'
+    ? MdOutlineCheckCircle
+    : appdOverallStatus === 'Warning'
+    ? MdOutlineWarningAmber
+    : appdOverallStatus === 'Error'
+    ? MdOutlineErrorOutline
+    : undefined; // Set to undefined when status is 'Undefined'
 
-  const guiIcon =
-    application.guiStatus === 'Working'
-      ? MdOutlineCheckCircle
-      : application.guiStatus === 'Warning'
-      ? MdOutlineWarningAmber
-      : MdOutlineErrorOutline;
+  const guiIcon = application.guiStatus === 'Working'
+    ? MdOutlineCheckCircle
+    : application.guiStatus === 'Warning'
+    ? MdOutlineWarningAmber
+    : application.guiStatus === 'Error'
+    ? MdOutlineErrorOutline
+    : undefined; // Set to undefined when status is 'Undefined'
 
   const overallStatusValue = overallStatus();
-  const overallIcon =
-    overallStatusValue === 'Working'
-      ? MdOutlineCheckCircle
-      : overallStatusValue === 'Warning'
-      ? MdOutlineWarningAmber
-      : MdOutlineErrorOutline;
-  const overallIconColor =
-    overallStatusValue === 'Working' ? 'green.400' : overallStatusValue === 'Warning' ? 'orange.400' : 'red.400';
+  const overallIcon = overallStatusValue === 'Working'
+    ? MdOutlineCheckCircle
+    : overallStatusValue === 'Warning'
+    ? MdOutlineWarningAmber
+    : overallStatusValue === 'Error'
+    ? MdOutlineErrorOutline
+    : undefined; // Set to undefined when status is 'Undefined'
+
+  const overallIconColor = overallStatusValue === 'Working'
+    ? 'green.400'
+    : overallStatusValue === 'Warning'
+    ? 'orange.400'
+    : overallStatusValue === 'Error'
+    ? 'red.400'
+    : 'gray.400'; // Set to gray for 'Undefined'
 
   return (
     <Card p='20px'>
@@ -163,7 +192,8 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           color={overallIconColor}
           zIndex={1}
         >
-          <Icon as={overallIcon} w='28px' h='28px' />
+          <Icon 
+            as={overallIcon} w='28px' h='28px' />
         </Flex>
         <Flex direction='row' align='center' justify='space-between' h='100%' mt='auto'>
           <Flex direction='row' align='center'>
@@ -175,7 +205,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                     ? 'green.400'
                     : mcOverallStatus === 'Warning'
                     ? 'orange.400'
-                    : 'red.400'
+                    : mcOverallStatus === 'Error' 
+                    ? 'red.400'
+                    : 'gray.400'
                 }
                 w='24px'
                 h='24px'
@@ -200,7 +232,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                     ? 'green.400'
                     : appdOverallStatus === 'Warning'
                     ? 'orange.400'
-                    : 'red.400'
+                    : appdOverallStatus === 'Error' 
+                    ? 'red.400'
+                    : 'gray.400'
                 }
                 w='24px'
                 h='24px'
@@ -221,11 +255,13 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Icon
                 as={guiIcon}
                 color={
-                  application.guiStatus === 'Green'
+                  application.guiStatus === 'Working'
                     ? 'green.400'
-                    : application.guiStatus === 'Amber'
+                    : application.guiStatus === 'Warning'
                     ? 'orange.400'
-                    : 'red.400'
+                    : application.guiStatus === 'Error' 
+                    ? 'red.400'
+                    : 'gray.400'
                 }
                 w='24px'
                 h='24px'
@@ -246,7 +282,13 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           >
             Check Issue
           </Button>
-          <PopupCard isOpen={isOpen} onClose={handleClosePopup} serversNodes={serversNodes} selectedFilterType={selectedFilterType}/>
+            <PopupCard 
+              isOpen={isOpen} 
+              onClose={handleClosePopup} 
+              serversNodes={serversNodes} 
+              selectedFilterType={selectedFilterType}
+              onGlobalSnooze={(snoozedNode: ServerNode) => addGlobalSnooze(snoozedNode)} // Pass the correct argument type
+            />
         </Flex>
       </Flex>
     </Card>

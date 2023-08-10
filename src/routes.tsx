@@ -3,7 +3,6 @@ import { MdBusinessCenter, MdCode, MdDashboard } from 'react-icons/md';
 
 import Dashboard from 'views/dashboards/dashboard';
 import PanelView from 'views/tech/panelView';
-import ApplicationStatus from 'views/business/applicationStatus';
 import ApplicationList from 'views/tech/listView';
 
 const routes = [
@@ -45,24 +44,7 @@ const routes = [
 				secondary: true
 			}
 		]
-	},
-
-	// --- Business Support View ---
-	// {
-	// 	name: 'Business Support',
-	// 	path: '/business',
-	// 	icon: <Icon as={MdBusinessCenter} width='20px' height='20px' color='inherit' />,
-	// 	collapse: true,
-	// 	items: [
-	// 		{
-	// 			name: 'Application Status',
-	// 			layout: '',
-	// 			path: '/business/app-status',
-	// 			exact: false,
-	// 			component: ApplicationStatus
-	// 		}
-	// 	]
-	// }
+	}
 ];
 
 export default routes;

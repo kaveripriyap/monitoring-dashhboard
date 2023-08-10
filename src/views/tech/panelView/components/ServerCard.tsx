@@ -26,6 +26,8 @@ const ServerCard: React.FC<ServerCardProps> = ({ name, error, time, status }) =>
   } else if (status === 'Error') {
     icon = MdOutlineErrorOutline;
     iconColor = 'red.400';
+  } else {
+    iconColor = 'gray.400'
   }
 
   return (

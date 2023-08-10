@@ -18,12 +18,13 @@ import {
 
 import Banner from 'views/tech/panelView/components/Banner';
 import ApplicationCard from 'views/tech/panelView/components/ApplicationCard';
-import ServerCard from './components/ServerCard';
+import SnoozedNodesPopup from './components/SnoozedNodesPopup';
 import ServerCardList from './components/ServerCardList';
 import { SearchBar } from 'views/tech/panelView/components/Search';
 import { HSeparator } from 'components/separator/Separator';
 import tableAppList, { getAppListWithDerivedStatuses } from './variable/tableAppList';
 import tableNodeList from './variable/tableServerNodeList';
+import { GlobalSnoozeProvider, useGlobalSnooze } from './components/GlobalSnoozeContext';
 
 import {
   MdDensityMedium,
@@ -49,9 +50,19 @@ type NodeObj = {
   link: string;
 };
 
+type ServerNode = {
+  name: string;
+  type: 'MC' | 'AppD';
+  aaCode: string;
+  error: string;
+  time: string;
+  status: 'Error' | 'Warning' | 'Working';
+  link: string;
+  snoozeTime?: number;
+};
+
 export default function PanelView() {
   const [tabState, setTabState] = useState('application');
-  const [activeTab, setActiveTab] = useState<'application' | 'server'>('application');
   const [filteredServerList, setFilteredServerList] = useState<NodeObj[]>(tableNodeList);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -60,29 +71,32 @@ export default function PanelView() {
   const [selectedAppAACode, setSelectedAppAACode] = useState<string | null>(null);
   const [tabKey, setTabKey] = useState<number>(0);
   const [shouldSwitchToServerTab, setShouldSwitchToServerTab] = useState(false);
+  const [snoozedNodes, setSnoozedNodes] = useState<ServerNode[]>([]);
+  const [isSnoozedNodesPopupOpen, setIsSnoozedNodesPopupOpen] = useState(false);
+  const [serversNodes, setServersNodes] = useState<ServerNode[]>([]);
+
+  const handleSnoozedNodesButtonClick = () => {
+    setIsSnoozedNodesPopupOpen(true);
+  };
+
+  const handleSnoozeEnd = (snoozedNode: ServerNode) => {
+    // Find the index of the snoozed node to be removed in the snoozedNodes array
+    const snoozedNodeIndex = snoozedNodes.findIndex(node => node.name === snoozedNode.name);
+  
+    // If the snoozed node is found in the array, remove it
+    if (snoozedNodeIndex !== -1) {
+      const updatedSnoozedNodes = [...snoozedNodes];
+      updatedSnoozedNodes.splice(snoozedNodeIndex, 1);
+      setSnoozedNodes(updatedSnoozedNodes);
+    }
+  };
 
   const filterServersByApp = (aaCode: string) => {
     const filteredServerList = tableNodeList.filter((node) => node.aaCode === aaCode);
     setFilteredServerList(filteredServerList);
   };
 
-  const generateRandomKey = () => Math.floor(Math.random() * 1000) + 1;
-  
-  // Function to handle tab change
-  const handleTabChange = (index: number) => {
-    if (index === 0) {
-      // If the "Application" tab is active
-      setTabState('application');
-    } else if (index === 1) {
-      // If the "Server" tab is active
-      setTabState('server');
-    }
-  };
-
   const textColor = useColorModeValue('secondaryGray.900', 'white');
-  const buttonBg = useColorModeValue('transparent', 'navy.800');
-  const hoverButton = useColorModeValue({ bg: 'gray.100' }, { bg: 'whiteAlpha.100' });
-  const activeButton = useColorModeValue({ bg: 'gray.200' }, { bg: 'whiteAlpha.200' });
   const paleGray = useColorModeValue('secondaryGray.400', 'whiteAlpha.100');
 
   const getStatusPriority = (status: string) => {
@@ -103,26 +117,11 @@ export default function PanelView() {
     const lowerSearchQuery = searchQuery.toLowerCase();
     return Object.values(data).some((value) => String(value).toLowerCase().includes(lowerSearchQuery));
   };
-
-  const getOverallStatus = (mcStatus: string, appdStatus: string, guiStatus: string) => {
-    const statuses = [mcStatus, appdStatus, guiStatus];
-    if (statuses.includes('Error')) {
-      return 'Error';
-    } else if (statuses.includes('Warning')) {
-      return 'Warning';
-    } else {
-      return 'Working';
-    }
-  };
   
   const filterByStatus = (data: AppData) => {
-    console.log(data);
-
     if (selectedStatus === 'all' || selectedStatus === '') {
       return true; // Show all cards when 'All' or an empty value is selected
     }
-
-    console.log(selectedStatus);
   
     // Filter by status
     const filteredByStatus = data.overallStatus === selectedStatus;
@@ -147,7 +146,6 @@ export default function PanelView() {
   
   useEffect(() => {
     const appListWithStatuses = getAppListWithDerivedStatuses(tableAppList, tableNodeList);
-    console.log(appListWithStatuses);
     const filteredList = appListWithStatuses.filter(filterBySearch).filter(filterByStatus);
     setFilteredAppList(filteredList);
   }, [searchQuery, selectedStatus]);
@@ -193,7 +191,8 @@ export default function PanelView() {
   };
 
   return (
-    <Box pt={{ base: '180px', md: '80px', xl: '80px' }}>
+    <GlobalSnoozeProvider>
+      <Box pt={{ base: '180px', md: '80px', xl: '80px' }}>
       {/* Main Fields */}
       <Box mb='20px' display={{ base: 'block', lg: 'grid' }}>
         <Flex flexDirection='column'>
@@ -278,6 +277,7 @@ export default function PanelView() {
             h='44px'
             maxH='44px'
             me='20px'
+            flexBasis='300px'
             value={selectedStatus}
             onChange={(event) => setSelectedStatus(event.target.value)}
           >
@@ -292,38 +292,63 @@ export default function PanelView() {
             h='44px'
             maxH='44px'
             me='20px'
+            flexBasis='300px'
             value={sortOrder}
             onChange={(event) => setSortOrder(event.target.value as 'asc' | 'desc')}
           >
             <option value='asc'>Ascending</option>
             <option value='desc'>Descending</option>
           </Select>
+            <Button 
+              fontSize='sm'
+              fontWeight='500'
+              borderRadius='70px'
+              alignSelf='flex-end'
+              variant='darkBrand'
+              h='44px'
+              maxH='44px'
+              me='20px'
+              width={180} 
+              size="sm" 
+              mr="2" 
+              px='20px'
+              py='8px'
+              onClick={handleSnoozedNodesButtonClick}>
+              View Snoozed Nodes
+            </Button>
+            {isSnoozedNodesPopupOpen && (
+              <SnoozedNodesPopup
+                isOpen={isSnoozedNodesPopupOpen}
+                onClose={() => setIsSnoozedNodesPopupOpen(false)}
+                onSnoozeEnd={handleSnoozeEnd} // Pass the snooze end function
+              />
+            )}
         </Flex>
         <Text mt='25px' mb='36px' color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
           {tabState === 'application' ? filteredAppList.length : filteredServerList.length} Results
         </Text>
         <TabPanels>
           <TabPanel px='0px'>
-            <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
-              {filteredAppList
-                .sort((a, b) => {
-                  if (sortOrder === 'asc') {
-                    return getStatusPriority(a.overallStatus) - getStatusPriority(b.overallStatus);
-                  } else {
-                    return getStatusPriority(b.overallStatus) - getStatusPriority(a.overallStatus);
-                  }
-                })
-                .map((data, index) => {
-                  return (
-                    <ApplicationCard
-                      key={index}
-                      application={data}
-                      serversNodes={tableNodeList.filter((node) => node.aaCode === data.aaCode)}
-                      onMCClick={handleMCClick}
-                    />
-                  );
-                })}
-            </SimpleGrid>
+              <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
+                {filteredAppList
+                  .sort((a, b) => {
+                    if (sortOrder === 'asc') {
+                      return getStatusPriority(a.overallStatus) - getStatusPriority(b.overallStatus);
+                    } else {
+                      return getStatusPriority(b.overallStatus) - getStatusPriority(a.overallStatus);
+                    }
+                  })
+                  .map((data, index) => {
+                    return (
+                      <ApplicationCard
+                        key={index}
+                        application={data}
+                        serversNodes={tableNodeList.filter((node) => node.aaCode === data.aaCode)}
+                        onMCClick={handleMCClick}
+                      />
+                    );
+                  })}
+              </SimpleGrid>
           </TabPanel>
           <TabPanel px='0px'>
             {/* Use the key prop to force a re-render of the ServerCardList component */}
@@ -332,6 +357,7 @@ export default function PanelView() {
         </TabPanels>
       </Tabs>
     </Box>
+    </GlobalSnoozeProvider>
   );
 }
 
