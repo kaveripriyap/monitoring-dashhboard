@@ -5,12 +5,13 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 type ServerNode = {
   name: string;
   type: 'MC' | 'AppD';
-  aaCode: string;
+  asCode: string;
   error: string;
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
   snoozeTime?: number;
+  comment?: string;
 };
 
 type GlobalSnoozeContextType = {

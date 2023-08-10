@@ -15,8 +15,8 @@ const getOverallStatus = (mcStatus: string, appdStatus: string, guiStatus: strin
 
 const calculateDerivedStatuses = (nodes: NodeObj[], appList: AppObj[]): AppObj[] => {
 	return appList.map((app) => {
-		const mcNodes = nodes.filter((node) => node.type === 'MC' && node.aaCode === app.aaCode);
-		const appdNodes = nodes.filter((node) => node.type === 'AppD' && node.aaCode === app.aaCode);
+		const mcNodes = nodes.filter((node) => node.type === 'MC' && node.asCode === app.asCode);
+		const appdNodes = nodes.filter((node) => node.type === 'AppD' && node.asCode === app.asCode);
 
 		const mcStatus = mcNodes.some((node) => node.status === 'Error')
 		? 'Error'
@@ -47,7 +47,7 @@ export const getAppListWithDerivedStatuses = (appList: AppObj[], nodes: NodeObj[
 
 type AppObj = {
 	name: string;
-	aaCode: string;
+	asCode: string;
 	overallStatus: string;
 	mcStatus: string,
     appdStatus: string,
@@ -57,7 +57,7 @@ type AppObj = {
 const tableAppList: AppObj[] = [
 	{
 		name: 'App 1',
-		aaCode: 'AA1',
+		asCode: 'AA1',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -65,7 +65,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 2',
-		aaCode: 'AA2',
+		asCode: 'AA2',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -73,7 +73,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 3',
-		aaCode: 'AA3',
+		asCode: 'AA3',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -81,7 +81,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 4',
-		aaCode: 'AA4',
+		asCode: 'AA4',
 		overallStatus: 'Undefined',
 		mcStatus: 'Undefined',
         appdStatus: 'Undefined',
@@ -89,7 +89,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 5',
-		aaCode: 'AA5',
+		asCode: 'AA5',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -97,7 +97,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 6',
-		aaCode: 'AA6',
+		asCode: 'AA6',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -105,7 +105,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 7',
-		aaCode: 'AA7',
+		asCode: 'AA7',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -113,7 +113,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 8',
-		aaCode: 'AA8',
+		asCode: 'AA8',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',
@@ -121,7 +121,7 @@ const tableAppList: AppObj[] = [
 	},
 	{
 		name: 'App 9',
-		aaCode: 'AA9',
+		asCode: 'AA9',
 		overallStatus: '',
 		mcStatus: '',
         appdStatus: '',

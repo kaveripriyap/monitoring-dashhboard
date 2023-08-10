@@ -6,7 +6,7 @@ import ServerCard from './ServerCard';
 type NodeObj = {
     name: string;
     type: 'MC' | 'AppD';
-    aaCode: string;
+    asCode: string;
     error: string;
     time: string;
     status: 'Error' | 'Warning' | 'Working';
@@ -22,7 +22,7 @@ const ServerCardList: React.FC<ServerCardListProps> = ({ filteredServerList }) =
     <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
       {filteredServerList.map((serverNode) => (
         <ServerCard
-          key={serverNode.aaCode}
+          key={serverNode.asCode}
           name={serverNode.name}
           error={serverNode.error}
           time={serverNode.time}

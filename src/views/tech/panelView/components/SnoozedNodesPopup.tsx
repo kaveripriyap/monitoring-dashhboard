@@ -22,11 +22,12 @@ import { useGlobalSnooze } from './GlobalSnoozeContext';
 type ServerNode = {
   name: string;
   type: 'MC' | 'AppD';
-  aaCode: string;
+  asCode: string;
   error: string;
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
+  comment?: string;
 };
 
 type SnoozedNodesPopupProps = {
@@ -55,6 +56,7 @@ const SnoozedNodesPopup: React.FC<SnoozedNodesPopupProps> = ({
                     <Th>Name</Th>
                     <Th>Error</Th>
                     <Th>Status</Th>
+                    <Th>Comment</Th>
                     <Th>Link</Th>
                     <Th>End Snooze</Th>
                 </Tr>
@@ -66,6 +68,7 @@ const SnoozedNodesPopup: React.FC<SnoozedNodesPopupProps> = ({
                     <Td>{snoozedNode.name}</Td>
                     <Td>{snoozedNode.error}</Td>
                     <Td>{snoozedNode.status}</Td>
+                    <Td>{snoozedNode.comment}</Td>
                     <Td>
                         <a href={snoozedNode.link} target="_blank" rel="noopener noreferrer">
                         Link

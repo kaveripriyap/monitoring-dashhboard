@@ -23,6 +23,7 @@ import {
   Input,
   FormControl,
   FormLabel,
+  Textarea,
 } from '@chakra-ui/react';
 import { MdCheckCircle, MdOutlineWarningAmber, MdOutlineErrorOutline, MdSnooze } from 'react-icons/md';
 import { useGlobalSnooze } from './GlobalSnoozeContext';
@@ -30,28 +31,30 @@ import { useGlobalSnooze } from './GlobalSnoozeContext';
 type ServerNode = {
   name: string;
   type: 'MC' | 'AppD';
-  aaCode: string;
+  asCode: string;
   error: string;
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
   snoozeTime?: number;
+  comment?: string;
 };
 
 type PopupCardProps = {
   isOpen: boolean;
   onClose: () => void;
   serversNodes: ServerNode[];
-  selectedFilterType: 'MC' | 'AppD' | 'All';
+  selectedFilterType: 'MC' | 'AppD' | 'GUI' | 'All';
   onGlobalSnooze: (serverNode: ServerNode, snoozeHours: number, snoozeDays: number) => void;
 };
 
 const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, selectedFilterType, onGlobalSnooze }) => {
   const [sorting, setSorting] = useState<{ id: keyof ServerNode; desc: boolean }[]>([]);
-  const [filterType, setFilterType] = useState<'MC' | 'AppD' | 'All'>(selectedFilterType);
+  const [filterType, setFilterType] = useState<'MC' | 'AppD' | 'GUI' | 'All'>(selectedFilterType);
   const [isSnoozeModalOpen, setIsSnoozeModalOpen] = useState(false);
   const [snoozeHours, setSnoozeHours] = useState(0);
   const [snoozeDays, setSnoozeDays] = useState(0);
+  const [snoozeComment, setSnoozeComment] = useState('');
   const [selectedServerNode, setSelectedServerNode] = useState<ServerNode | null>(null);
   const { globalSnoozedItems, addGlobalSnooze, globalSnoozedItemsUpdated, updateGlobalSnoozedItems } = useGlobalSnooze();
 
@@ -79,7 +82,25 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
   }));
 
   const getSortedData = () => {
-    if (sorting.length === 0) return serversNodes;
+    if (sorting.length === 0) {
+      return serversNodes.sort((a, b) => {
+        if (a.status === 'Error' && b.status !== 'Error') {
+          return -1; // 'Error' comes first
+        } else if (a.status !== 'Error' && b.status === 'Error') {
+          return 1;
+        } else if (a.status === 'Warning' && b.status === 'Error') {
+          return -1; // 'Warning' comes after 'Error'
+        } else if (a.status === 'Error' && b.status === 'Warning') {
+          return 1;
+        } else if (a.status === 'Warning' && b.status !== 'Error' && b.status !== 'Warning') {
+          return -1; // 'Warning' comes before other statuses
+        } else if (a.status !== 'Error' && a.status !== 'Warning' && b.status === 'Warning') {
+          return 1;
+        }
+        return 0;
+      });
+    }
+
     const sortedData = [...serversNodes].sort((a, b) => {
       const columnId = sorting[0].id;
       const aValue = a[columnId];
@@ -91,6 +112,7 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
 
       return sorting[0].desc ? bValue.toString().localeCompare(aValue.toString()) : aValue.toString().localeCompare(bValue.toString());
     });
+
     return sortedData;
   };
 
@@ -116,21 +138,30 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
     if (data.snoozeTime && data.snoozeTime > Date.now()) {
       return false;
     }
+    
     if (filterType === 'All') {
-      return true;
+      return data.status === 'Error' || data.status === 'Warning'; // Add condition to filter 'Error' or 'Warning' nodes
     }
-    return data.type === filterType;
+    
+    return data.type === filterType && (data.status === 'Error' || data.status === 'Warning'); // Filter by type and status
   };
 
-  const handleSnooze = (serverNode: ServerNode, snoozeHours: number, snoozeDays: number) => {
+  const handleSnooze = (serverNode: ServerNode, snoozeHours: number, snoozeDays: number, comment: string) => {
+    if (comment.length < 30) {
+      alert('Please provide a comment of at least 30 characters.');
+      return;
+    }
+
     const snoozeTime = Date.now() + (snoozeHours * 60 * 60 * 1000) + (snoozeDays * 24 * 60 * 60 * 1000);
     serverNode.snoozeTime = snoozeTime;
+    serverNode.comment = comment;
 
     addGlobalSnooze(serverNode);
 
     setIsSnoozeModalOpen(false);
     setSnoozeHours(0);
     setSnoozeDays(0);
+    setSnoozeComment('');
 
     // // Remove the snoozed item from the popup card's snoozed list
     // const updatedSnoozedItems = globalSnoozedItems.filter(item => item !== serverNode);
@@ -151,8 +182,11 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
             <Button colorScheme={filterType === 'MC' ? 'navy' : 'gray'} size="sm" mr="3" onClick={() => setFilterType('MC')}>
               MC
             </Button>
-            <Button colorScheme={filterType === 'AppD' ? 'navy' : 'gray'} size="sm" onClick={() => setFilterType('AppD')}>
+            <Button colorScheme={filterType === 'AppD' ? 'navy' : 'gray'} size="sm" mr="3" onClick={() => setFilterType('AppD')}>
               AppD
+            </Button>
+            <Button colorScheme={filterType === 'GUI' ? 'navy' : 'gray'} size="sm" onClick={() => setFilterType('GUI')}>
+              GUI
             </Button>
           </Flex>
           <Box overflowX="auto">
@@ -237,12 +271,22 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
                                 onChange={(e) => setSnoozeDays(Number(e.target.value) || 0)}
                               />
                             </FormControl>
+                            <FormControl mt={2}>
+                              <FormLabel>Comment (minimum 30 characters):</FormLabel>
+                              <Textarea
+                                value={snoozeComment}
+                                onChange={(e) => setSnoozeComment(e.target.value)}
+                                required
+                                minLength={30}
+                              />
+                            </FormControl>
                             </ModalBody>
                             <ModalFooter>
                               <Button size="sm" mr="2" colorScheme={'navy'} onClick={() => {
                                 setIsSnoozeModalOpen(false);
                                 setSnoozeHours(0); // Reset snoozeHours to 0
                                 setSnoozeDays(0);  // Reset snoozeDays to 0
+
                               }}>
                                 Close
                               </Button>
@@ -252,10 +296,11 @@ const PopupCard: React.FC<PopupCardProps> = ({ isOpen, onClose, serversNodes, se
                                 colorScheme={'teal'}
                                 onClick={() => {
                                   if (selectedServerNode) {
-                                    handleSnooze(selectedServerNode, snoozeHours, snoozeDays);
+                                    handleSnooze(selectedServerNode, snoozeHours, snoozeDays, snoozeComment);
                                     setIsSnoozeModalOpen(false);
                                     setSnoozeHours(0); // Reset snoozeHours to 0
                                     setSnoozeDays(0);  // Reset snoozeDays to 0
+                                    setSnoozeComment('');
                                   }
                                 }}
                               >

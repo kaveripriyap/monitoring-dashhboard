@@ -20,7 +20,7 @@ import { useGlobalSnooze } from './GlobalSnoozeContext';
 
 type Application = {
   name: string;
-  aaCode: string;
+  asCode: string;
   overallStatus: string;
   mcStatus: string;
   appdStatus: string;
@@ -30,18 +30,19 @@ type Application = {
 type ServerNode = {
   name: string;
   type: 'MC' | 'AppD';
-  aaCode: string;
+  asCode: string;
   error: string;
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
   snoozeTime?: number;
+  comment?: string;
 };
 
 type ApplicationCardProps = {
   application: Application;
   serversNodes: ServerNode[];
-  onMCClick: (aaCode: string) => void;
+  onMCClick: (asCode: string) => void;
 };
 
 const ApplicationCard: React.FC<ApplicationCardProps> = ({
@@ -52,7 +53,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   const textColor = useColorModeValue('navy.700', 'white');
   const textColorBid = useColorModeValue('black.500', 'white');
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedFilterType, setSelectedFilterType] = useState<'MC' | 'AppD' | 'All'>('All');
+  const [selectedFilterType, setSelectedFilterType] = useState<'MC' | 'AppD' | 'GUI' | 'All'>('All');
   const { globalSnoozedItems, addGlobalSnooze } = useGlobalSnooze();
 
   const handleCheckIssueClick = () => {
@@ -68,6 +69,11 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   const handleMCClick = () => {
     setIsOpen(true);
     setSelectedFilterType('MC'); // Set the selected filter type to 'AppD'
+  };
+
+  const handleGUIClick = () => {
+    setIsOpen(true);
+    setSelectedFilterType('GUI'); // Set the selected filter type to 'AppD'
   };
 
   const handleClosePopup = () => {
@@ -211,6 +217,8 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 }
                 w='24px'
                 h='24px'
+                cursor="pointer"  
+                onClick={handleMCClick} 
               />
               <Text
               fontWeight="medium"
@@ -238,6 +246,8 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 }
                 w='24px'
                 h='24px'
+                cursor="pointer"  
+                onClick={handleAppDClick} 
               />
               <Text
               fontWeight="medium"
@@ -265,8 +275,17 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 }
                 w='24px'
                 h='24px'
+                cursor="pointer"
+                onClick={handleGUIClick}
               />
-              <Text fontWeight='medium' fontSize='sm' color={textColorBid} mt='8px'>
+              <Text 
+              fontWeight='medium' 
+              fontSize='sm' 
+              color={textColorBid} 
+              mt='8px'
+              cursor="pointer"
+              onClick={handleGUIClick}
+              >
                 GUI
               </Text>
             </Flex>

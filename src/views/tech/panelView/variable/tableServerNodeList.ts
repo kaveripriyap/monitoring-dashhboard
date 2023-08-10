@@ -1,7 +1,7 @@
 export type NodeObj = {
     name: string;
     type: 'MC' | 'AppD';
-    aaCode: string;
+    asCode: string;
     error: string;
     time: string;
     status: 'Error' | 'Warning' | 'Working';
@@ -13,17 +13,17 @@ const tableNodeList: NodeObj[] = [
 {
     name: 'Server 1',
     type: 'MC',
-    aaCode: 'AA1', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA1', // This asCode should match the asCode of the corresponding application
     error: 'CPU Overload',
     time: 'July 11, 8:10 AM',
-    status: 'Error',
+    status: 'Warning',
     link: 'https://www.mc.com/server1/cpu',
     component: 'CPU'
 },
 {
     name: 'Server 1',
     type: 'MC',
-    aaCode: 'AA1', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA1', // This asCode should match the asCode of the corresponding application
     error: 'Disk Overload',
     time: 'July 11, 8:10 AM',
     status: 'Error',
@@ -33,7 +33,7 @@ const tableNodeList: NodeObj[] = [
 {
     name: 'Node 1',
     type: 'AppD',
-    aaCode: 'AA1', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA1', // This asCode should match the asCode of the corresponding application
     error: '',
     time: 'July 11, 8:10 AM',
     status: 'Working',
@@ -42,7 +42,7 @@ const tableNodeList: NodeObj[] = [
 {
     name: 'Server 2',
     type: 'MC',
-    aaCode: 'AA2', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA2', // This asCode should match the asCode of the corresponding application
     error: '',
     time: 'July 11, 8:10 AM',
     status: 'Working',
@@ -51,7 +51,7 @@ const tableNodeList: NodeObj[] = [
 {
     name: 'Node 2',
     type: 'AppD',
-    aaCode: 'AA2', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA2', // This asCode should match the asCode of the corresponding application
     error: 'Disk Overload',
     time: 'July 11, 8:10 AM',
     status: 'Warning',
@@ -60,7 +60,7 @@ const tableNodeList: NodeObj[] = [
 {
     name: 'Server 3',
     type: 'MC',
-    aaCode: 'AA3', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA3', // This asCode should match the asCode of the corresponding application
     error: 'Disk Overload',
     time: 'July 11, 8:10 AM',
     status: 'Warning',
@@ -69,7 +69,7 @@ const tableNodeList: NodeObj[] = [
 {
     name: 'Node 3',
     type: 'AppD',
-    aaCode: 'AA3', // This aaCode should match the aaCode of the corresponding application
+    asCode: 'AA3', // This asCode should match the asCode of the corresponding application
     error: 'Disk Overload',
     time: 'July 11, 8:10 AM',
     status: 'Warning',

@@ -33,7 +33,7 @@ import {
 
 interface AppData {
 	name: string;
-	aaCode: string;
+	asCode: string;
 	overallStatus: string;
 	mcStatus: string,
   appdStatus: string,
@@ -43,7 +43,7 @@ interface AppData {
 type NodeObj = {
   name: string;
   type: 'MC' | 'AppD';
-  aaCode: string;
+  asCode: string;
   error: string;
   time: string;
   status: 'Error' | 'Warning' | 'Working';
@@ -53,12 +53,13 @@ type NodeObj = {
 type ServerNode = {
   name: string;
   type: 'MC' | 'AppD';
-  aaCode: string;
+  asCode: string;
   error: string;
   time: string;
   status: 'Error' | 'Warning' | 'Working';
   link: string;
   snoozeTime?: number;
+  comment?: string;
 };
 
 export default function PanelView() {
@@ -68,7 +69,7 @@ export default function PanelView() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [filteredAppList, setFilteredAppList] = useState(tableAppList);
-  const [selectedAppAACode, setSelectedAppAACode] = useState<string | null>(null);
+  const [selectedAppasCode, setSelectedAppasCode] = useState<string | null>(null);
   const [tabKey, setTabKey] = useState<number>(0);
   const [shouldSwitchToServerTab, setShouldSwitchToServerTab] = useState(false);
   const [snoozedNodes, setSnoozedNodes] = useState<ServerNode[]>([]);
@@ -91,8 +92,8 @@ export default function PanelView() {
     }
   };
 
-  const filterServersByApp = (aaCode: string) => {
-    const filteredServerList = tableNodeList.filter((node) => node.aaCode === aaCode);
+  const filterServersByApp = (asCode: string) => {
+    const filteredServerList = tableNodeList.filter((node) => node.asCode === asCode);
     setFilteredServerList(filteredServerList);
   };
 
@@ -171,20 +172,20 @@ export default function PanelView() {
   }, [searchQuery, selectedStatus, sortOrder]);
 
   // Function to handle "MC" button click and filter the application list by MC servers
-  const handleMCClick = (aaCode: string) => {
-    setSelectedAppAACode(aaCode); // Set the selected application's aaCode
+  const handleMCClick = (asCode: string) => {
+    setSelectedAppasCode(asCode); // Set the selected application's asCode
     setShouldSwitchToServerTab(true); // Set the flag to indicate that we need to switch to the "Server" tab
   };
 
   useEffect(() => {
-    if (selectedAppAACode) {
-      // If there is a selected application, filter the server list based on its aaCode
-      filterServersByApp(selectedAppAACode);
+    if (selectedAppasCode) {
+      // If there is a selected application, filter the server list based on its asCode
+      filterServersByApp(selectedAppasCode);
     } else {
       // If there is no selected application, show all server cards
       setFilteredServerList(tableNodeList);
     }
-  }, [selectedAppAACode]);
+  }, [selectedAppasCode]);
 
   const switchTab = (tab: 'application' | 'server') => {
     setTabState(tab);
@@ -343,7 +344,7 @@ export default function PanelView() {
                       <ApplicationCard
                         key={index}
                         application={data}
-                        serversNodes={tableNodeList.filter((node) => node.aaCode === data.aaCode)}
+                        serversNodes={tableNodeList.filter((node) => node.asCode === data.asCode)}
                         onMCClick={handleMCClick}
                       />
                     );
