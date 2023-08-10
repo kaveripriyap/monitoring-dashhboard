@@ -23,8 +23,8 @@ import ServerCardList from './components/ServerCardList';
 import { SearchBar } from 'views/tech/panelView/components/Search';
 import { HSeparator } from 'components/separator/Separator';
 import tableAppList, { getAppListWithDerivedStatuses } from './variable/tableAppList';
-import tableNodeList from './variable/tableServerNodeList';
-import { GlobalSnoozeProvider, useGlobalSnooze } from './components/GlobalSnoozeContext';
+import tableNodeList, { fetchTableNodeList } from './variable/tableServerNodeList';
+import { GlobalSnoozeProvider } from './components/GlobalSnoozeContext';
 
 import {
   MdDensityMedium,
@@ -64,7 +64,6 @@ type ServerNode = {
 
 export default function PanelView() {
   const [tabState, setTabState] = useState('application');
-  const [filteredServerList, setFilteredServerList] = useState<NodeObj[]>(tableNodeList);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -75,10 +74,28 @@ export default function PanelView() {
   const [snoozedNodes, setSnoozedNodes] = useState<ServerNode[]>([]);
   const [isSnoozedNodesPopupOpen, setIsSnoozedNodesPopupOpen] = useState(false);
   const [serversNodes, setServersNodes] = useState<ServerNode[]>([]);
+  const [tableNodeList, setTableNodeList] = useState<NodeObj[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const updatedTableNodeList = await fetchTableNodeList();
+      setTableNodeList(updatedTableNodeList);
+    };
+
+    fetchData(); // Fetch data immediately on component mount
+
+    // Set up an interval to fetch data every 15 minutes
+    const intervalId = setInterval(fetchData, 15 * 60 * 1000);
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleSnoozedNodesButtonClick = () => {
     setIsSnoozedNodesPopupOpen(true);
   };
+
+  const [filteredServerList, setFilteredServerList] = useState<NodeObj[]>(tableNodeList);
 
   const handleSnoozeEnd = (snoozedNode: ServerNode) => {
     // Find the index of the snoozed node to be removed in the snoozedNodes array

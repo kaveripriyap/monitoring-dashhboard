@@ -8,6 +8,17 @@ export type NodeObj = {
     link: string;
     component?: 'CPU' | 'APPL' | 'NBU' | 'DISK';
 };
+
+export const fetchTableNodeList = async () => {
+    try {
+      const response = await fetch('your-backend-api-url');
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return []; // Return an empty array or handle the error as needed
+    }
+  };
   
 const tableNodeList: NodeObj[] = [
 {
