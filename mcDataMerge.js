@@ -21,7 +21,17 @@ const mcData = mcDynamicRows.map(row => {
   const asCode = solutionMap[row.INKA] || '';
   const statusMap = { '1': 'Working', '2': 'Warning', '3': 'Error' };
   const status = statusMap[row.STATUS] || '';
-  const error = row.COMPONENT + ': ' + row.ERROR.split('<br>')[0].trim();
+
+  // Handle ERROR field
+  let error = '';
+  if (row.ERROR) {
+    error = row.COMPONENT;
+    if (row.ERROR.includes('<br>')) {
+      error += ': ' + row.ERROR.split('<br>')[0].trim();
+    }
+  } else {
+    error = row.COMPONENT;
+  }
   
   return {
     name: row.SERVER_NAME,
