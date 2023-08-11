@@ -1,19 +1,18 @@
 const fs = require('fs');
-const parse = require('csv-parse/lib/sync');
-const stringify = require('csv-stringify/lib/sync');
+const Papa = require('papaparse');
 
 // Read CSV files
 const mcStaticData = fs.readFileSync('mc_static.csv', 'utf-8');
 const mcDynamicData = fs.readFileSync('mc_dynamic.csv', 'utf-8');
 
 // Parse CSV data
-const mcStaticRows = parse(mcStaticData, { columns: true });
-const mcDynamicRows = parse(mcDynamicData, { columns: true });
+const mcStaticRows = Papa.parse(mcStaticData, { header: true, dynamicTyping: true }).data;
+const mcDynamicRows = Papa.parse(mcDynamicData, { header: true, dynamicTyping: true }).data;
 
-// Create a map of SOLUTION_ID to SOLUTION_NAME
+// Create a map of INKA to SOLUTION_ID (asCode) from mc_static data
 const solutionMap = {};
 mcStaticRows.forEach(row => {
-  solutionMap[row.SOLUTION_ID] = row.SOLUTION_NAME;
+  solutionMap[row.INKA] = row.SOLUTION_ID;
 });
 
 // Transform and merge data
@@ -36,10 +35,7 @@ const mcData = mcDynamicRows.map(row => {
 });
 
 // Convert mcData to CSV format
-const mcDataCsv = stringify(mcData, {
-  header: true,
-  columns: ['name', 'type', 'asCode', 'time', 'status', 'link', 'error']
-});
+const mcDataCsv = Papa.unparse(mcData, { header: true });
 
 // Write the merged data to mc_data.csv
 fs.writeFileSync('mc_data.csv', mcDataCsv, 'utf-8');
