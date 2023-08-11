@@ -176,3 +176,45 @@ app.get('/api/server-node-list', async (req, res) => {
 server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+app.get('/api/server-node-list', async (req, res) => {
+    try {
+        const mcData = await parseCsv('mc_data.csv');
+        const appdData = await parseCsv('appd_data.csv');
+        const guiData = await parseCsv('gui_data.csv');
+        
+        const mergedData = mergeData(mcData, appdData, guiData);
+
+        res.json(mergedData);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Helper function to parse a CSV file and return a Promise with the parsed data
+function parseCsv(filePath) {
+    return new Promise((resolve, reject) => {
+        const results = [];
+
+        fs.createReadStream(filePath)
+            .pipe(csvParser())
+            .on('data', (data) => results.push(data))
+            .on('end', () => resolve(results))
+            .on('error', (error) => reject(error));
+    });
+}
+
+// Helper function to merge data from three arrays
+function mergeData(array1, array2, array3) {
+    const merged = [];
+
+    for (let i = 0; i < array1.length; i++) {
+        merged.push({
+            ...array1[i],
+            ...array2[i],
+            ...array3[i]
+        });
+    }
+
+    return merged;
+}
