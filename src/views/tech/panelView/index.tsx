@@ -18,11 +18,12 @@ import {
 
 import Banner from 'views/tech/panelView/components/Banner';
 import ApplicationCard from 'views/tech/panelView/components/ApplicationCard';
+import ClusterCard from './components/ClusterCard';
 import SnoozedNodesPopup from './components/SnoozedNodesPopup';
 import ServerCardList from './components/ServerCardList';
 import { SearchBar } from 'views/tech/panelView/components/Search';
 import { HSeparator } from 'components/separator/Separator';
-import tableAppList, { getAppListWithDerivedStatuses } from './variable/tableAppList';
+import tableAppList, { getAppListWithDerivedStatuses, calculateClusterStatus } from './variable/tableAppList';
 import tableNodeList, { fetchTableNodeList } from './variable/tableServerNodeList';
 import { GlobalSnoozeProvider } from './components/GlobalSnoozeContext';
 
@@ -38,6 +39,7 @@ interface AppData {
 	mcStatus: string,
   appdStatus: string,
   guiStatus: string,
+  cluster: string
 }
 
 type NodeObj = {
@@ -62,6 +64,16 @@ type ServerNode = {
   comment?: string;
 };
 
+export type AppObj = {
+	name: string;
+	asCode: string;
+	overallStatus: string;
+	mcStatus: string,
+  appdStatus: string,
+  guiStatus: string,
+	cluster: string
+};
+
 export default function PanelView() {
   const [tabState, setTabState] = useState('application');
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,6 +87,8 @@ export default function PanelView() {
   const [isSnoozedNodesPopupOpen, setIsSnoozedNodesPopupOpen] = useState(false);
   const [serversNodes, setServersNodes] = useState<ServerNode[]>([]);
   const [tableNodeList, setTableNodeList] = useState<NodeObj[]>([]);
+  const [clusterStatusMapping, setClusterStatusMapping] = useState<Record<string, string>>({});
+  const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,6 +107,14 @@ export default function PanelView() {
 
   const handleSnoozedNodesButtonClick = () => {
     setIsSnoozedNodesPopupOpen(true);
+  };
+
+  const handleClusterClick = (cluster: string) => {
+    if (cluster === selectedCluster) {
+      setSelectedCluster(null); // Deselect the cluster if it's already selected
+    } else {
+      setSelectedCluster(cluster); // Update the selectedCluster state
+    }
   };
 
   const [filteredServerList, setFilteredServerList] = useState<NodeObj[]>(tableNodeList);
@@ -147,6 +169,15 @@ export default function PanelView() {
     return filteredByStatus;
   };
 
+  const filterByCluster = (data: AppData) => {
+    if (selectedCluster === null || selectedCluster === '') {
+      return true; // Show all cards when no cluster is selected
+    }
+  
+    // Filter by cluster
+    return data.cluster === selectedCluster;
+  };  
+
   const filterNodeByName = (data: NodeObj) => {
     if (searchQuery === '') {
       return true; // Show all nodes when search query is empty
@@ -161,12 +192,53 @@ export default function PanelView() {
     }
     return data.status === selectedStatus;
   };
+
+  useEffect(() => {
+  const newClusterStatusMapping: Record<string, string> = {};
+
+  tableAppList.forEach((app) => {
+    const cluster = app.cluster;
+    
+    if (cluster && !newClusterStatusMapping[cluster]) {
+      // Derive the cluster status based on app statuses
+      const clusterApps = tableAppList.filter((a) => a.cluster === cluster);
+      const clusterStatus = calculateClusterStatus(clusterApps); // Implement this function
+      newClusterStatusMapping[cluster] = clusterStatus;
+    }
+  });
+
+  setClusterStatusMapping(newClusterStatusMapping);
+}, [tableAppList]);
   
   useEffect(() => {
     const appListWithStatuses = getAppListWithDerivedStatuses(tableAppList, tableNodeList);
-    const filteredList = appListWithStatuses.filter(filterBySearch).filter(filterByStatus);
+    const filteredList = appListWithStatuses.filter(filterBySearch).filter(filterByStatus).filter(filterByCluster);
     setFilteredAppList(filteredList);
-  }, [searchQuery, selectedStatus]);
+
+    // Calculate cluster statuses
+    const clusterAppMapping: Record<string, AppObj[]> = {};
+
+    filteredList.forEach((app) => {
+      const clusterName = app.cluster;
+  
+      if (clusterName) {
+        if (!clusterAppMapping[clusterName]) {
+          clusterAppMapping[clusterName] = [];
+        }
+        clusterAppMapping[clusterName].push(app);
+      }
+    });
+
+    const newClusterStatusMapping: Record<string, string> = {};
+
+    Object.keys(clusterAppMapping).forEach((clusterName) => {
+      const clusterApps = clusterAppMapping[clusterName];
+      const clusterStatus = calculateClusterStatus(clusterApps); // Implement this function
+      newClusterStatusMapping[clusterName] = clusterStatus;
+    });
+
+    setClusterStatusMapping(newClusterStatusMapping);
+  }, [searchQuery, selectedStatus, selectedCluster]);
 
   useEffect(() => {
     // Filter the server list based on search query and selected status
@@ -214,8 +286,18 @@ export default function PanelView() {
       {/* Main Fields */}
       <Box mb='20px' display={{ base: 'block', lg: 'grid' }}>
         <Flex flexDirection='column'>
-          <Banner name='Monitoring Dashboard' />
+          <Banner name='' />
         </Flex>
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
+          {Object.keys(clusterStatusMapping).map((cluster) => (
+          <ClusterCard
+            key={cluster}
+            name={cluster}
+            derivedStatus={clusterStatusMapping[cluster]}
+            onClick={() => handleClusterClick(cluster)}
+          />
+        ))}
+      </SimpleGrid>
       </Box>
       <Tabs variant='soft-rounded' colorScheme='brandTabs'>
         <TabList mx={{ base: '10px', lg: '30px' }} overflowX={{ sm: 'scroll', lg: 'unset' }}>

@@ -25,6 +25,7 @@ type Application = {
   mcStatus: string;
   appdStatus: string;
   guiStatus: string;
+  cluster: string;
 };
 
 type ServerNode = {

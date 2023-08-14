@@ -85,9 +85,7 @@ const tableNodeList: NodeObj[] = [
     time: 'July 11, 8:10 AM',
     status: 'Warning',
     link: 'https://www.appd.com/node3',
-},
-// Add more server/node data here
-// ...
+}
 ];
 
 export default tableNodeList;

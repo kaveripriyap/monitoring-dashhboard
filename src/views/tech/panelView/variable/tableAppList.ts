@@ -45,13 +45,33 @@ export const getAppListWithDerivedStatuses = (appList: AppObj[], nodes: NodeObj[
 	return calculateDerivedStatuses(nodes, tableAppList);
 };
 
-type AppObj = {
+export const calculateClusterStatus = (clusterApps: AppObj[]): string => {
+	const clusterAppStatuses = clusterApps.map((app) => app.overallStatus);
+  
+	let clusterStatus = '';
+	
+	if (clusterAppStatuses.includes('Error')) {
+	  clusterStatus = 'Error';
+	} else if (clusterAppStatuses.includes('Warning')) {
+	  clusterStatus = 'Warning';
+	} else if (clusterAppStatuses.includes('Working')) {
+	  clusterStatus = 'Working';
+	} else {
+	  clusterStatus = 'Undefined';
+	}
+  
+	return clusterStatus;
+  };
+  
+
+export type AppObj = {
 	name: string;
 	asCode: string;
 	overallStatus: string;
 	mcStatus: string,
     appdStatus: string,
     guiStatus: string,
+	cluster: string
 };
 
 const tableAppList: AppObj[] = [
@@ -62,6 +82,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Working',
+		cluster: 'Cluster 1'
 	},
 	{
 		name: 'App 2',
@@ -70,6 +91,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: '',
+		cluster: 'Cluster 2'
 	},
 	{
 		name: 'App 3',
@@ -78,6 +100,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Error',
+		cluster: 'Cluster 3'
 	},
 	{
 		name: 'App 4',
@@ -86,6 +109,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: 'Undefined',
         appdStatus: 'Undefined',
         guiStatus: 'Undefined',
+		cluster: 'Cluster 4'
 	},
 	{
 		name: 'App 5',
@@ -94,6 +118,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Working',
+		cluster: 'Cluster 1'
 	},
 	{
 		name: 'App 6',
@@ -102,6 +127,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Warning',
+		cluster: 'Cluster 2'
 	},
 	{
 		name: 'App 7',
@@ -110,6 +136,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Warning',
+		cluster: 'Cluster 3'
 	},
 	{
 		name: 'App 8',
@@ -118,6 +145,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Working',
+		cluster: 'Cluster 4'
 	},
 	{
 		name: 'App 9',
@@ -126,6 +154,7 @@ const tableAppList: AppObj[] = [
 		mcStatus: '',
         appdStatus: '',
         guiStatus: 'Error',
+		cluster: 'Cluster 1'
 	}
 ];
 
