@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Text, Box, Icon } from '@chakra-ui/react';
+import { Flex, Text, Box, Icon, useColorModeValue } from '@chakra-ui/react';
 import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
 import Card from 'components/card/Card';
 
@@ -22,8 +22,23 @@ const getStatusIcon = (status: string) => {
   }
 };
 
+const getCardBgColor = (status: string) => {
+  switch (status) {
+    case 'Working':
+      return 'green.100';
+    case 'Warning':
+      return 'yellow.100';
+    case 'Error':
+      return 'red.100';
+    default:
+      return 'gray.100';
+  }
+};
+
 const ClusterCard: React.FC<ClusterCardProps> = ({ name, derivedStatus, onClick }) => {
   const icon = getStatusIcon(derivedStatus);
+  const cardBgColor = useColorModeValue(getCardBgColor(derivedStatus), 'gray.600');
+
 
   return (
     <Card
@@ -32,35 +47,15 @@ const ClusterCard: React.FC<ClusterCardProps> = ({ name, derivedStatus, onClick 
       cursor='pointer'
       borderRadius='md'
       boxShadow='md'
+      bg={cardBgColor}
       transition='all 0.2s ease'
       _hover={{ transform: 'scale(1.05)' }}
+      minH='180px' // Set a minimum height for the card
     >
-      <Flex direction='column' align='center'>
-        <Text fontSize='lg' fontWeight='semibold' mb='10px'>
+      <Flex direction='column' align='center' justifyContent='center' h='100%'>
+        <Text fontSize='lg' fontWeight='semibold' textAlign='center'>
           {name}
         </Text>
-        {icon && (
-          <Box
-            w='30px'
-            h='30px'
-            borderRadius='50%'
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
-            mb='10px'
-            bg={
-              derivedStatus === 'Working'
-                ? 'green.100'
-                : derivedStatus === 'Warning'
-                ? 'yellow.100'
-                : derivedStatus === 'Error'
-                ? 'red.100'
-                : 'gray.100'
-            }
-          >
-            {icon}
-          </Box>
-        )}
       </Flex>
     </Card>
   );
