@@ -399,6 +399,23 @@ export default function PanelView() {
             <option value='asc'>Ascending</option>
             <option value='desc'>Descending</option>
           </Select>
+          <Select
+            fontSize='sm'
+            variant='main'
+            h='44px'
+            maxH='44px'
+            me='20px'
+            flexBasis='300px'
+            value={selectedCluster} // Set the selected cluster
+            onChange={(event) => setSelectedCluster(event.target.value)} // Update the selected cluster
+          >
+            <option value=''>All Clusters</option> {/* Option to show all clusters */}
+            {Object.keys(clusterStatusMapping).map((cluster) => (
+              <option key={cluster} value={cluster}>
+                {cluster}
+              </option>
+            ))}
+          </Select>
             <Button 
               fontSize='sm'
               fontWeight='500'
