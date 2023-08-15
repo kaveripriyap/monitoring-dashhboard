@@ -46,23 +46,23 @@ export const getAppListWithDerivedStatuses = (appList: AppObj[], nodes: NodeObj[
 };
 
 export const calculateClusterStatus = (clusterApps: AppObj[]): string => {
-	const clusterAppStatuses = clusterApps.map((app) => app.overallStatus);
+  const clusterAppStatuses = clusterApps.map((app) => app.overallStatus);
+
+  let clusterStatus = '';
   
-	let clusterStatus = '';
-	
-	if (clusterAppStatuses.includes('Error')) {
-	  clusterStatus = 'Error';
-	} else if (clusterAppStatuses.includes('Warning')) {
-	  clusterStatus = 'Warning';
-	} else if (clusterAppStatuses.includes('Working')) {
-	  clusterStatus = 'Working';
-	} else {
-	  clusterStatus = 'Undefined';
-	}
-  
-	return clusterStatus;
-  };
-  
+  if (clusterAppStatuses.includes('Error')) {
+    clusterStatus = 'Error';
+  } else if (clusterAppStatuses.includes('Warning')) {
+    clusterStatus = 'Warning';
+  } else if (clusterAppStatuses.includes('Working')) {
+    clusterStatus = 'Working';
+  } else {
+    clusterStatus = 'Undefined';
+  }
+
+  return clusterStatus;
+};
+
 
 export type AppObj = {
 	name: string;
