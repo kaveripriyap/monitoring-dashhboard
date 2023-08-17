@@ -2,6 +2,7 @@ import { Icon } from '@chakra-ui/react';
 import { MdBusinessCenter, MdCode, MdDashboard } from 'react-icons/md';
 
 import Dashboard from 'views/dashboards/dashboard';
+import HolidayCalendar from 'views/dashboards/calendar';
 import PanelView from 'views/tech/panelView';
 import ApplicationList from 'views/tech/listView';
 
@@ -16,8 +17,14 @@ const routes = [
 			{
 				name: 'Dashboard View',
 				layout: '',
-				path: '/dashboards/view',
+				path: '/dashboards/cluster-view',
 				component: Dashboard
+			},
+			{
+				name: 'Holiday Calendar',
+				layout: '',
+				path: '/dashboards/holiday-calendar',
+				component: HolidayCalendar
 			}
 		]
 	},

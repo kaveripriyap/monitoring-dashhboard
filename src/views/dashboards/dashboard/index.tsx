@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Flex,
+  Grid,
   Text,
   useColorModeValue,
   SimpleGrid
@@ -13,6 +14,10 @@ import ClusterCard from '../../tech/panelView/components/ClusterCard';
 import tableAppList, { getAppListWithDerivedStatuses, calculateClusterStatus } from '../../tech/panelView/variable/tableAppList';
 import { fetchTableNodeList } from '../../tech/panelView/variable/tableServerNodeList';
 import { GlobalSnoozeProvider } from '../../tech/panelView/components/GlobalSnoozeContext';
+import Card from 'components/card/Card';
+import { calendarData } from '../calendar/variables/calendar';
+import EventCalendar from '../../../components/calendar/EventCalendar';
+import Timeline from '../calendar/components/Timeline';
 
 interface AppData {
   name: string;
@@ -297,6 +302,7 @@ export default function PanelView() {
 				name='No data (#)'
 				value={noDataCount.toString()}
 			/>
+		</SimpleGrid>
 			<Flex direction='column' bg={boxBg} p='16px 20px' borderRadius='14px'>
 				<Text fontSize='sm' fontWeight='700' color={textColor}>
 					What is this dashboard?
@@ -305,7 +311,6 @@ export default function PanelView() {
 					A consolidated view to monitor applications.
 				</Text>
 			</Flex>
-		</SimpleGrid>
 		<SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap='20px'>
 			{/* Display ClusterCard components using the cluster status data */}
 			{Object.keys(clusterStatusMapping).map((cluster) => (
