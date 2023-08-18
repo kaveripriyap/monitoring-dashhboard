@@ -376,3 +376,152 @@ Contributions to the WM Monitoring Application that can help improve its functio
 3. **Pull Request:** Submit a pull request with a detailed description of your changes, explaining the problem you solved and the approach you took.
 
 4. **Testing:** If applicable, include tests for your contributions to maintain code quality.
+
+---
+
+# Intellimonitor - Backend
+
+The Node.js and Express backend of the WM Monitoring Application serves as the core for retrieving, processing, and serving data from three distinct data sources: MC (Master Controller), AppD (Application Data), and GUI (Graphical User Interface). The backend is responsible for regular data fetching, processing, storage, and exposing APIs to serve this data to the frontend.
+
+---
+
+## Prerequisites
+
+Before you begin, ensure that you meet the following prerequisites:
+
+- Node.js version 18.12.0 or higher
+- npm version 8.19.2 or higher
+
+---
+
+## Installation
+
+Follow these steps to get the WM Monitoring Application up and running:
+
+1. Clone the repository to your local machine.
+
+   ```bash
+   git clone https://github.com/your-username/your-repository.git
+   ```
+   
+2. Navigate to the project directory.
+
+   ```bash
+   cd your-repository
+   ```
+
+3. Install the required dependencies by running the following command:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the backend of the application using:
+
+   ```bash
+   node src/server.js
+   ```
+   
+---
+
+## Folder Structure
+
+The repository is organized with the following folder structure:
+
+---
+
+### Data Retrieval and Processing
+
+1. **Data Sources Integration:** The backend interfaces with three data sources - MC, AppD, and GUI. It periodically fetches data from these sources using predefined APIs or data retrieval mechanisms.
+
+2. **Scheduled Fetching:** Cron jobs are set up to regularly retrieve data from each data source at specified intervals.
+
+3. **Data Processing:** The fetched raw data is processed and transformed into a format suitable for storage in the backend's database. Any necessary data transformations, validations, or calculations are performed during this phase.
+
+---
+
+### Data Storage
+
+1. **Database Integration:** The backend utilizes OracleDB to store processed data. 
+
+2. **Schema Design:** The database schema is structured to reflect the data relationships and ensure efficient data retrieval.
+
+---
+
+### API Endpoints
+
+1. **API Routing:** The backend defines API endpoints for the `tableNodeServerList`. 
+
+2. **Data Extraction:** When an API endpoint is hit, the backend queries the OracleDB tables with SQL to retrieve the required data. Data is extracted and transformed into a format suitable for frontend consumption.
+
+---
+
+### Data Updates and Maintenance
+
+1. **Regular Updates:** The backend updates the database with new data fetched from the data sources at regular intervals. This ensures that the stored data is up-to-date and reflects the latest status of applications, nodes, and servers.
+
+2. **Data Maintenance:** Outdated or redundant data may be removed from the database periodically to maintain a lean and efficient storage system.
+
+---
+
+### API Security and Authentication
+
+1. **Authentication Mechanisms:** API endpoints may require authentication using tokens, API keys, or other secure mechanisms to ensure that only authorized users or applications can access the data.
+
+2. **Rate Limiting:** Rate limiting or throttling may be implemented to prevent abuse and protect the backend from excessive traffic.
+
+---
+
+### Error Handling and Logging
+
+1. **Error Handling:** The backend is equipped with error handling mechanisms to gracefully handle exceptions, such as data retrieval failures, database errors, or API errors.
+
+2. **Logging:** Detailed logs are maintained to track the backend's operations, diagnose issues, and monitor performance.
+
+The backend of the WM Monitoring Application serves as the central hub for managing data retrieval, processing, storage, and serving APIs. Its role is pivotal in ensuring that the frontend has access to accurate, up-to-date, and structured data from MC, AppD, and GUI, facilitating the monitoring and visualization of application clusters and nodes.
+
+---
+
+## Contributing
+
+We appreciate your interest in contributing to the WM Monitoring Application's Node.js and Express backend. Your contributions can help enhance the backend's functionality, performance, and overall quality. Here are some guidelines to consider when contributing:
+
+### General Backend Guidelines
+
+1. **Follow Node.js Best Practices:** Adhere to Node.js best practices and coding standards to ensure clean and maintainable backend code.
+
+2. **Modular Code:** Organize your code into modular components, such as routers, controllers, and services, for better maintainability and code reusability.
+
+3. **Use Express:** Leverage the Express framework for building RESTful APIs. Follow Express conventions for routing and middleware usage.
+
+4. **Error Handling:** Implement comprehensive error handling using middleware or custom error classes to provide informative responses to clients.
+
+5. **Database Access:** If the backend interacts with a database, follow secure and efficient practices for database access and query execution.
+
+### API Design and Documentation
+
+1. **RESTful Design:** Design APIs according to RESTful principles, using appropriate HTTP methods and status codes.
+
+2. **API Documentation:** Provide clear and concise documentation for each API endpoint, including input parameters, output formats, and error responses.
+
+### Security and Authentication
+
+1. **Input Validation:** Validate user input to prevent security vulnerabilities such as SQL injection or cross-site scripting (XSS) attacks.
+
+2. **Authentication and Authorization:** Implement authentication mechanisms (e.g., JWT) and appropriate authorization checks to secure your APIs.
+
+### Testing and Quality
+
+1. **Unit Testing:** Write unit tests for your backend components to ensure proper functionality and catch regressions.
+
+2. **Integration Testing:** Conduct integration tests to verify the interactions between different parts of the backend.
+
+### Submitting Contributions
+
+1. **Fork and Branch:** Fork the repository, create a new branch for your backend contribution, and commit your changes to that branch.
+
+2. **Clear Commit Messages:** Write clear and descriptive commit messages that explain the purpose of your changes.
+
+3. **Pull Request:** Submit a pull request with a comprehensive description of your changes, detailing the problem you solved and the approach you took.
+
+4. **Testing:** Include tests for your contributions to maintain the backend's stability and reliability.
